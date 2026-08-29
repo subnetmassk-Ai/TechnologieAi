@@ -18,8 +18,8 @@ source.include_exts = py,png,jpg,kv,atlas,ttf
 # (str) Application versioning
 version = 0.1
 
-# (list) Application requirements (الأساسية فقط لمنع خطأ HTTP 404)
-requirements = python3,kivy,pyjnius
+# (list) Application requirements (تم الاقتصار على الأساسيات لتجنب خطأ التنزيل 404)
+requirements = python3,kivy
 
 # (list) Permissions required by the app
 android.permissions = INTERNET, RECORD_AUDIO, CALL_PHONE, READ_EXTERNAL_STORAGE, WRITE_EXTERNAL_STORAGE
@@ -33,8 +33,8 @@ android.minapi = 21
 # (int) Android SDK version to use
 android.sdk = 33
 
-# (str) Android NDK version to use
-android.ndk = 25.2.9519653
+# ترك NDK مفرغاً ليقوم Buildozer بتنزيل الإصدار المتوافق التلقائي المتاح
+# android.ndk = 
 
 # (bool) If True, then skip building the NDK
 android.skip_update = False

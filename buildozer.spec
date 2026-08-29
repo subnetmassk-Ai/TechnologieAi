@@ -25,13 +25,16 @@ requirements = python3,kivy
 android.permissions = INTERNET, RECORD_AUDIO, CALL_PHONE, READ_EXTERNAL_STORAGE, WRITE_EXTERNAL_STORAGE
 
 # (int) Target Android API
-android.api = 31
+android.api = 33
 
 # (int) Minimum API required
 android.minapi = 21
 
 # (int) Android SDK version
-android.sdk = 31
+android.sdk = 33
+
+# (str) Android NDK version (الإصدار المستقر والمجرب لتفادي r28c)
+android.ndk = 25b
 
 # (bool) Accept SDK license automatically
 android.accept_sdk_license = True

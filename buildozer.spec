@@ -18,10 +18,10 @@ source.include_exts = py,png,jpg,kv,atlas,ttf
 # (str) Application versioning
 version = 0.1
 
-# (list) Application requirements (الأساسيات فقط)
+# (list) Application requirements
 requirements = python3,kivy
 
-# (list) Permissions required by the app
+# (list) Permissions required
 android.permissions = INTERNET, RECORD_AUDIO, CALL_PHONE, READ_EXTERNAL_STORAGE, WRITE_EXTERNAL_STORAGE
 
 # (int) Target Android API
@@ -33,14 +33,14 @@ android.minapi = 21
 # (int) Android SDK version
 android.sdk = 33
 
-# (str) Android NDK version (النسخة المستقرة المضمونة)
+# (str) Android NDK version
 android.ndk = 25b
 
 # (bool) Accept SDK license automatically
 android.accept_sdk_license = True
 
-# (str) The Android arch to build for
-android.archs = arm64-v8a, armeabi-v7a
+# (str) The Android arch to build for (تم تقليلها لمعمارية واحدة لتجنب مشاكل الـ Linker)
+android.archs = arm64-v8a
 
 # (bool) Enable AndroidX support
 android.enable_androidx = True

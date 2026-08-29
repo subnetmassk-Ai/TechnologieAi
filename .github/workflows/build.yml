@@ -27,7 +27,7 @@ jobs:
 
     - name: Build APK with Buildozer
       run: |
-        buildozer android accept_sdk_license
+        export ACCEPT_BUILD_TOOLS_CHECKSUM=1
         buildozer -v android debug
 
     - name: Upload APK Artifact
@@ -35,3 +35,4 @@ jobs:
       with:
         name: whatsapp-apk
         path: bin/*.apk
+       path: bin/*.apk

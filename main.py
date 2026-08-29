@@ -8,22 +8,20 @@ from kivy.utils import platform
 
 class AutoDialerApp(App):
     def build(self):
-        # طلب أذونات الأندرويد فور فتح التطبيق لتجنب الانهيار (Crash)
         if platform == 'android':
             self.request_android_permissions()
 
-        # إنشاء واجهة المستخدم الأساسية
         layout = BoxLayout(orientation='vertical', padding=20, spacing=20)
 
         self.status_label = Label(
-            text="مرحباً بك في WhatsApp Auto Dialer\nالتطبيق يعمل بنجاح!",
+            text="Welcome to WhatsApp Auto Dialer\nApp is working successfully!",
             font_size='18sp',
             halign='center'
         )
         layout.add_widget(self.status_label)
 
         btn = Button(
-            text="ابدأ تسجيل الرقم",
+            text="Start Recording Number",
             size_hint=(1, 0.2),
             background_color=(0.2, 0.7, 0.3, 1)
         )
@@ -45,8 +43,7 @@ class AutoDialerApp(App):
             print(f"Permissions error: {e}")
 
     def on_start_click(self, instance):
-        self.status_label.text = "جاري الاستماع للرقم..."
-        # هنا يتم استدعاء وظيفة التعرف على الصوت والاتصال
+        self.status_label.text = "Listening for number..."
 
 if __name__ == '__main__':
     AutoDialerApp().run()

@@ -47,10 +47,10 @@ jobs:
           ccache \
           lld
 
-    - name: Install Python Tools, Buildozer and p4a
+    - name: Install Python Tools and Buildozer
       run: |
         python -m pip install --upgrade pip
-        pip install --upgrade Cython==0.29.33 setuptools
+        pip install --upgrade "Cython<3.0.0" setuptools
         pip install --upgrade buildozer python-for-android
 
     - name: Build APK with Buildozer
@@ -58,3 +58,9 @@ jobs:
         unset ANDROID_NDK_HOME
         unset ANDROID_NDK_ROOT
         buildozer -v android debug
+
+    - name: Upload APK Artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: app-release
+        path: bin/*.apk

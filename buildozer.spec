@@ -35,7 +35,7 @@ fullscreen = 0
 # (list) Permissions
 android.permissions = INTERNET, RECORD_AUDIO
 
-# (int) Target Android API, should be as high as possible.
+# (int) Target Android API
 android.api = 33
 
 # (int) Minimum API required
@@ -47,7 +47,7 @@ android.ndk = 25b
 # (bool) Automatically accept SDK licenses
 android.accept_sdk_license = True
 
-# (str) The Android arch to build for, choices: armeabi-v7a, arm64-v8a, x86, x86_64
+# (str) The Android arch to build for
 android.archs = arm64-v8a, armeabi-v7a
 
 # (bool) Enable AndroidX support
@@ -57,7 +57,7 @@ android.enable_androidx = True
 # Python for Android (p4a) specific
 #
 
-# (str) python-for-android git clone directory (if empty, it will be automatically cloned from github)
+# (str) python-for-android git clone directory
 p4a.branch = master
 
 #
@@ -69,5 +69,5 @@ p4a.branch = master
 # (int) Log level (0 = error only, 1 = info, 2 = debug (with command output))
 log_level = 2
 
-# (int) Display warning if buildozer is run as root (0 = false, 1 = true)
+# (int) Display warning if buildozer is run as root
 warn_on_root = 1

@@ -18,10 +18,10 @@ source.include_exts = py,png,jpg,kv,atlas,ttf
 # (str) Application versioning
 version = 0.1
 
-# (list) Application requirements
+# (list) Application requirements (الأساسيات فقط)
 requirements = python3,kivy
 
-# (list) Permissions required
+# (list) Permissions required by the app
 android.permissions = INTERNET, RECORD_AUDIO, CALL_PHONE, READ_EXTERNAL_STORAGE, WRITE_EXTERNAL_STORAGE
 
 # (int) Target Android API
@@ -33,7 +33,7 @@ android.minapi = 21
 # (int) Android SDK version
 android.sdk = 33
 
-# (str) Android NDK version (الإصدار المستقر والمجرب لتفادي r28c)
+# (str) Android NDK version (النسخة المستقرة المضمونة)
 android.ndk = 25b
 
 # (bool) Accept SDK license automatically

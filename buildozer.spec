@@ -14,8 +14,10 @@ orientation = portrait
 android.permissions = INTERNET, RECORD_AUDIO, CALL_PHONE
 android.api = 33
 android.minapi = 21
-android.archs = arm64-v8a, armeabi-v7a
-android.allow_backup = True
+android.build_tools_version = 33.0.2
+android.ndk = 25b
+android.accept_sdk_license = True
+android.archs = arm64-v8a
 
 [buildozer]
 log_level = 2

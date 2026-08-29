@@ -12,20 +12,19 @@ package.domain = org.test
 # (str) Source code where the main.py live
 source.dir = .
 
-# (list) Source files to include (include font file if present)
+# (list) Source files to include
 source.include_exts = py,png,jpg,kv,atlas,ttf
 
 # (str) Application versioning
 version = 0.1
 
-# (list) Application requirements
-# تشمل الكيفي ومكتبات معالجة النصوص العربية والأذونات
-requirements = python3,kivy,pyjnius,arabic_reshaper,python-bidi
+# (list) Application requirements (الأساسية فقط لمنع خطأ HTTP 404)
+requirements = python3,kivy,pyjnius
 
 # (list) Permissions required by the app
 android.permissions = INTERNET, RECORD_AUDIO, CALL_PHONE, READ_EXTERNAL_STORAGE, WRITE_EXTERNAL_STORAGE
 
-# (int) Target Android API, should be at least 27, 28, 29 or 31, 33, 34
+# (int) Target Android API
 android.api = 33
 
 # (int) Minimum API required to run the app

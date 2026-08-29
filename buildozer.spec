@@ -11,11 +11,11 @@ orientation = portrait
 osx.kivy_version = 2.1.0
 
 fullscreen = 0
-android.permissions = INTERNET
+aandroid.permissions = INTERNET
 android.api = 31
 android.minapi = 21
+android.sdk_build_tools = 31.0.0
 android.ndk = 25b
-
 [buildozer]
 log_level = 2
 warn_on_root = 1

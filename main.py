@@ -6,56 +6,65 @@ from kivy.uix.button import Button
 from kivy.uix.label import Label
 from kivy.utils import platform
 
+# مكتبات معالجة النص العربي
+try:
+    import arabic_reshaper
+    from bidi.algorithm import get_display
+    HAS_ARABIC_SUPPORT = True
+except ImportError:
+    HAS_ARABIC_SUPPORT = False
+
+def reshape_ar(text):
+    if HAS_ARABIC_SUPPORT:
+        reshaped = arabic_reshaper.reshape(text)
+        return get_display(reshaped)
+    return text
+
 class AutoDialerApp(App):
     def build(self):
         if platform == 'android':
             self.request_android_permissions()
 
-        self.current_lang = 'en'  # اللغة الافتراضية
+        self.current_lang = 'en'
+        self.font_path = 'font.ttf' if os.path.exists('font.ttf') else None
 
-        # القواميس للغتين
         self.texts = {
             'en': {
-                'title': "Welcome to WhatsApp Auto Dialer",
+                'title': "Welcome to WhatsApp Auto Dialer\nApp is working successfully!",
                 'btn_start': "Start Recording",
-                'btn_lang': "تغيير للغة العربية",
+                'btn_lang': "اللغة العربية",
                 'listening': "Listening for number..."
             },
             'ar': {
-                'title': "مرحباً بك في تطبيق الاتصال التلقائي",
-                'btn_start': "ابدأ تسجيل الرقم",
-                'btn_lang': "Switch to English",
-                'listening': "جاري الاستماع للرقم..."
+                'title': reshape_ar("مرحباً بك في تطبيق الاتصال التلقائي\nالتطبيق يعمل بنجاح!"),
+                'btn_start': reshape_ar("ابدأ تسجيل الرقم"),
+                'btn_lang': "English",
+                'listening': reshape_ar("جاري الاستماع للرقم...")
             }
         }
 
         layout = BoxLayout(orientation='vertical', padding=20, spacing=15)
 
-        # تحديد الخط العربي إذا كان الملف موجوداً
-        font_path = 'arabic.ttf' if os.path.exists('arabic.ttf') else None
-
         self.status_label = Label(
             text=self.texts['en']['title'],
-            font_name=font_path,
+            font_name=self.font_path,
             font_size='18sp',
             halign='center'
         )
         layout.add_widget(self.status_label)
 
-        # زر بدء التسجيل
         self.btn_start = Button(
             text=self.texts['en']['btn_start'],
-            font_name=font_path,
+            font_name=self.font_path,
             size_hint=(1, 0.2),
             background_color=(0.2, 0.7, 0.3, 1)
         )
         self.btn_start.bind(on_press=self.on_start_click)
         layout.add_widget(self.btn_start)
 
-        # زر التبديل بين اللغات
         self.btn_lang = Button(
             text=self.texts['en']['btn_lang'],
-            font_name=font_path,
+            font_name=self.font_path,
             size_hint=(1, 0.15),
             background_color=(0.2, 0.4, 0.8, 1)
         )
@@ -65,7 +74,6 @@ class AutoDialerApp(App):
         return layout
 
     def toggle_language(self, instance):
-        # التبديل بين العربية والإنجليزية
         self.current_lang = 'ar' if self.current_lang == 'en' else 'en'
         lang = self.current_lang
 

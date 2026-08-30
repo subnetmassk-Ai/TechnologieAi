@@ -7,21 +7,20 @@ from kivy.uix.textinput import TextInput
 from kivy.uix.button import Button
 from kivy.uix.label import Label
 from kivy.clock import Clock
+from kivy.utils import platform
 import speech_recognition as sr
 
 class WhatsAppAutomationApp(App):
     def build(self):
-        self.title = "WhatsApp Automation & Voice Assistant"
+        self.title = "WhatsApp Assistant"
         layout = BoxLayout(orientation='vertical', padding=20, spacing=15)
         
-        # Header
         layout.add_widget(Label(
             text="[b]تطبيق الواتساب الذكي[/b]", 
             markup=True, 
             font_size='22sp'
         ))
         
-        # Section 1: Manual Input
         self.phone_input = TextInput(
             hint_text="أدخل رقم الهاتف مع الرمز الدولي...", 
             input_filter='int',
@@ -40,7 +39,6 @@ class WhatsAppAutomationApp(App):
         btn_manual.bind(on_press=self.open_manual_whatsapp)
         layout.add_widget(btn_manual)
         
-        # Section 2: Voice Action
         btn_voice = Button(
             text="🎤 معالجة الصوت واستخراج الرقم", 
             size_hint_y=None, 
@@ -50,14 +48,25 @@ class WhatsAppAutomationApp(App):
         btn_voice.bind(on_press=self.start_voice_processing)
         layout.add_widget(btn_voice)
         
-        # Status Label
         self.status_label = Label(
             text="الحالة: التطبيق جاهز للعمل", 
             font_size='14sp'
         )
         layout.add_widget(self.status_label)
         
+        # طلب الصلاحيات فور فتح التطبيق على الأندرويد
+        if platform == 'android':
+            self.request_android_permissions()
+            
         return layout
+
+    def request_android_permissions(self):
+        from android.permissions import request_permissions, Permission
+        request_permissions([
+            Permission.RECORD_AUDIO,
+            Permission.READ_EXTERNAL_STORAGE,
+            Permission.WRITE_EXTERNAL_STORAGE
+        ])
 
     def open_manual_whatsapp(self, instance):
         phone_number = self.phone_input.text.strip()
@@ -72,11 +81,11 @@ class WhatsAppAutomationApp(App):
         Clock.schedule_once(self.process_audio, 0.5)
 
     def process_audio(self, dt):
-        # مسار الملف الصوتي الذي تم إعداده
+        # المسار الافتراضي لملف الصوت في المجلد الحالي
         audio_path = "recorded_audio.wav"
         
         if not os.path.exists(audio_path):
-            self.status_label.text = "خطأ: لم يتم العثور على ملف الصوت recorded_audio.wav"
+            self.status_label.text = "خطأ: لم يتم العثور على ملف recorded_audio.wav"
             return
             
         recognizer = sr.Recognizer()
@@ -85,7 +94,7 @@ class WhatsAppAutomationApp(App):
                 audio_data = recognizer.record(source)
                 text = recognizer.recognize_google(audio_data, language="ar-SA")
                 
-                # استخراج الأرقام فقط
+                # استخراج أرقام الهاتف من النص المتعرف عليه
                 extracted_numbers = "".join(re.findall(r'\d+', text))
                 
                 if extracted_numbers:

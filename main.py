@@ -6,9 +6,7 @@ from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.textinput import TextInput
 from kivy.uix.button import Button
 from kivy.uix.label import Label
-from kivy.clock import Clock
 from kivy.utils import platform
-import speech_recognition as sr
 
 class WhatsAppAutomationApp(App):
     def build(self):
@@ -39,22 +37,12 @@ class WhatsAppAutomationApp(App):
         btn_manual.bind(on_press=self.open_manual_whatsapp)
         layout.add_widget(btn_manual)
         
-        btn_voice = Button(
-            text="🎤 معالجة الصوت واستخراج الرقم", 
-            size_hint_y=None, 
-            height='50dp',
-            background_color=(0.2, 0.5, 0.9, 1)
-        )
-        btn_voice.bind(on_press=self.start_voice_processing)
-        layout.add_widget(btn_voice)
-        
         self.status_label = Label(
             text="الحالة: التطبيق جاهز للعمل", 
             font_size='14sp'
         )
         layout.add_widget(self.status_label)
         
-        # طلب الصلاحيات فور فتح التطبيق على الأندرويد
         if platform == 'android':
             self.request_android_permissions()
             
@@ -63,7 +51,7 @@ class WhatsAppAutomationApp(App):
     def request_android_permissions(self):
         from android.permissions import request_permissions, Permission
         request_permissions([
-            Permission.RECORD_AUDIO,
+            Permission.INTERNET,
             Permission.READ_EXTERNAL_STORAGE,
             Permission.WRITE_EXTERNAL_STORAGE
         ])
@@ -75,35 +63,6 @@ class WhatsAppAutomationApp(App):
             webbrowser.open(f"https://wa.me/{phone_number}")
         else:
             self.status_label.text = "يرجى كتابة رقم الهاتف أولاً."
-
-    def start_voice_processing(self, instance):
-        self.status_label.text = "جاري قراءة ملف الصوت..."
-        Clock.schedule_once(self.process_audio, 0.5)
-
-    def process_audio(self, dt):
-        # المسار الافتراضي لملف الصوت في المجلد الحالي
-        audio_path = "recorded_audio.wav"
-        
-        if not os.path.exists(audio_path):
-            self.status_label.text = "خطأ: لم يتم العثور على ملف recorded_audio.wav"
-            return
-            
-        recognizer = sr.Recognizer()
-        try:
-            with sr.AudioFile(audio_path) as source:
-                audio_data = recognizer.record(source)
-                text = recognizer.recognize_google(audio_data, language="ar-SA")
-                
-                # استخراج أرقام الهاتف من النص المتعرف عليه
-                extracted_numbers = "".join(re.findall(r'\d+', text))
-                
-                if extracted_numbers:
-                    self.status_label.text = f"تم العثور على الرقم: {extracted_numbers}"
-                    webbrowser.open(f"https://wa.me/{extracted_numbers}")
-                else:
-                    self.status_label.text = "لم يتم العثور على أرقام داخل الصوت."
-        except Exception as err:
-            self.status_label.text = f"خطأ في معالجة الصوت: {str(err)}"
 
 if __name__ == "__main__":
     WhatsAppAutomationApp().run()

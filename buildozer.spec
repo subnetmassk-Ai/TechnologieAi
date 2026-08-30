@@ -1,54 +1,27 @@
 [app]
-
-# (str) Title of your application
-title = WhatsApp Auto Dialer
-
-# (str) Package name
-package.name = whatsappautodialer
-
-# (str) Package domain
+title = WhatsApp Assistant
+package.name = whatsappapp
 package.domain = org.test
 
-# (str) Source code location
 source.dir = .
+source.include_exts = py,png,jpg,kv,atlas,wav
 
-# (list) Source files to include
-source.include_exts = py,png,jpg,kv,atlas,ttf
-
-# (str) Application versioning
 version = 0.1
+requirements = python3,kivy,SpeechRecognition,requests
 
-# (list) Application requirements
-requirements = python3,kivy
+orientation = portrait
+osx.kivy_version = 2.2.1
 
-# (list) Permissions required
-android.permissions = INTERNET, RECORD_AUDIO, CALL_PHONE, READ_EXTERNAL_STORAGE, WRITE_EXTERNAL_STORAGE
+fullscreen = 0
 
-# (int) Target Android API
+# Android specific configurations
+android.permissions = INTERNET, RECORD_AUDIO, READ_EXTERNAL_STORAGE, WRITE_EXTERNAL_STORAGE
 android.api = 33
-
-# (int) Minimum API required
 android.minapi = 21
-
-# (int) Android SDK version
-android.sdk = 33
-
-# (str) Android NDK version
 android.ndk = 25b
-
-# (bool) Accept SDK license automatically
-android.accept_sdk_license = True
-
-# (str) The Android arch to build for (تم تقليلها لمعمارية واحدة لتجنب مشاكل الـ Linker)
-android.archs = arm64-v8a
-
-# (bool) Enable AndroidX support
-android.enable_androidx = True
+android.archs = arm64-v8a, armeabi-v7a
+android.allow_backup = True
 
 [buildozer]
-
-# (int) Log level
 log_level = 2
-
-# (int) Display warning if buildozer is run as root
 warn_on_root = 1

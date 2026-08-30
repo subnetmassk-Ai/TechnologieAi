@@ -2,20 +2,15 @@
 title = WhatsApp Assistant
 package.name = whatsappapp
 package.domain = org.test
-
-source.dir = .
-source.include_exts = py,png,jpg,kv,atlas,wav
-
-# رقم الإصدار (مطلوب بشكل أساسي)
 version = 0.1
+source.dir = .
+source.include_exts = py,png,jpg,kv,atlas,wav,spec
 
-# المكتبات المطلوبة
 requirements = python3,kivy==2.2.1,SpeechRecognition,requests
 
 orientation = portrait
 fullscreen = 0
 
-# الصلاحيات وإعدادات Android SDK & NDK
 android.permissions = INTERNET, RECORD_AUDIO, READ_EXTERNAL_STORAGE, WRITE_EXTERNAL_STORAGE
 android.api = 33
 android.minapi = 21

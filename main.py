@@ -1,92 +1,100 @@
-import sys
 import os
+import re
+import webbrowser
 from kivy.app import App
 from kivy.uix.boxlayout import BoxLayout
+from kivy.uix.textinput import TextInput
 from kivy.uix.button import Button
 from kivy.uix.label import Label
-from kivy.utils import platform
+from kivy.clock import Clock
+import speech_recognition as sr
 
-class AutoDialerApp(App):
+class WhatsAppAutomationApp(App):
     def build(self):
-        # طلب أذونات الأندرويد فور تشغيل التطبيق لتجنب الإغلاق
-        if platform == 'android':
-            self.request_android_permissions()
-
-        self.current_lang = 'en'
-        # فحص وجود خط عربي في مجلد المشروع
-        self.font_path = 'font.ttf' if os.path.exists('font.ttf') else None
-
-        # نصوص اللغتين
-        self.texts = {
-            'en': {
-                'title': "Welcome to WhatsApp Auto Dialer\nApp is working successfully!",
-                'btn_start': "Start Recording Number",
-                'btn_lang': "العربية / Change to Arabic",
-                'listening': "Listening for number..."
-            },
-            'ar': {
-                'title': "WhatsApp Auto Dialer\nالتطبيق يعمل بنجاح!",
-                'btn_start': "ابدأ تسجيل الرقم",
-                'btn_lang': "English / التغيير للإنجليزية",
-                'listening': "جاري الاستماع للرقم..."
-            }
-        }
-
+        self.title = "WhatsApp Automation & Voice Assistant"
         layout = BoxLayout(orientation='vertical', padding=20, spacing=15)
-
-        # النص الرئيسي
+        
+        # Header
+        layout.add_widget(Label(
+            text="[b]تطبيق الواتساب الذكي[/b]", 
+            markup=True, 
+            font_size='22sp'
+        ))
+        
+        # Section 1: Manual Input
+        self.phone_input = TextInput(
+            hint_text="أدخل رقم الهاتف مع الرمز الدولي...", 
+            input_filter='int',
+            multiline=False,
+            size_hint_y=None,
+            height='50dp'
+        )
+        layout.add_widget(self.phone_input)
+        
+        btn_manual = Button(
+            text="فتح الواتساب يدويًا", 
+            size_hint_y=None, 
+            height='50dp',
+            background_color=(0.1, 0.7, 0.3, 1)
+        )
+        btn_manual.bind(on_press=self.open_manual_whatsapp)
+        layout.add_widget(btn_manual)
+        
+        # Section 2: Voice Action
+        btn_voice = Button(
+            text="🎤 معالجة الصوت واستخراج الرقم", 
+            size_hint_y=None, 
+            height='50dp',
+            background_color=(0.2, 0.5, 0.9, 1)
+        )
+        btn_voice.bind(on_press=self.start_voice_processing)
+        layout.add_widget(btn_voice)
+        
+        # Status Label
         self.status_label = Label(
-            text=self.texts['en']['title'],
-            font_name=self.font_path,
-            font_size='18sp',
-            halign='center'
+            text="الحالة: التطبيق جاهز للعمل", 
+            font_size='14sp'
         )
         layout.add_widget(self.status_label)
-
-        # زر بدء التسجيل
-        self.btn_start = Button(
-            text=self.texts['en']['btn_start'],
-            font_name=self.font_path,
-            size_hint=(1, 0.2),
-            background_color=(0.2, 0.7, 0.3, 1)
-        )
-        self.btn_start.bind(on_press=self.on_start_click)
-        layout.add_widget(self.btn_start)
-
-        # زر التبديل بين العربية والإنجليزية
-        self.btn_lang = Button(
-            text=self.texts['en']['btn_lang'],
-            font_name=self.font_path,
-            size_hint=(1, 0.15),
-            background_color=(0.2, 0.4, 0.8, 1)
-        )
-        self.btn_lang.bind(on_press=self.toggle_language)
-        layout.add_widget(self.btn_lang)
-
+        
         return layout
 
-    def toggle_language(self, instance):
-        self.current_lang = 'ar' if self.current_lang == 'en' else 'en'
-        lang = self.current_lang
+    def open_manual_whatsapp(self, instance):
+        phone_number = self.phone_input.text.strip()
+        if phone_number:
+            self.status_label.text = f"جاري فتح المحادثة للرقم: {phone_number}"
+            webbrowser.open(f"https://wa.me/{phone_number}")
+        else:
+            self.status_label.text = "يرجى كتابة رقم الهاتف أولاً."
 
-        self.status_label.text = self.texts[lang]['title']
-        self.btn_start.text = self.texts[lang]['btn_start']
-        self.btn_lang.text = self.texts[lang]['btn_lang']
+    def start_voice_processing(self, instance):
+        self.status_label.text = "جاري قراءة ملف الصوت..."
+        Clock.schedule_once(self.process_audio, 0.5)
 
-    def request_android_permissions(self):
+    def process_audio(self, dt):
+        # مسار الملف الصوتي الذي تم إعداده
+        audio_path = "recorded_audio.wav"
+        
+        if not os.path.exists(audio_path):
+            self.status_label.text = "خطأ: لم يتم العثور على ملف الصوت recorded_audio.wav"
+            return
+            
+        recognizer = sr.Recognizer()
         try:
-            from android.permissions import request_permissions, Permission
-            request_permissions([
-                Permission.RECORD_AUDIO,
-                Permission.CALL_PHONE,
-                Permission.READ_EXTERNAL_STORAGE,
-                Permission.WRITE_EXTERNAL_STORAGE
-            ])
-        except Exception as e:
-            print(f"Permissions error: {e}")
+            with sr.AudioFile(audio_path) as source:
+                audio_data = recognizer.record(source)
+                text = recognizer.recognize_google(audio_data, language="ar-SA")
+                
+                # استخراج الأرقام فقط
+                extracted_numbers = "".join(re.findall(r'\d+', text))
+                
+                if extracted_numbers:
+                    self.status_label.text = f"تم العثور على الرقم: {extracted_numbers}"
+                    webbrowser.open(f"https://wa.me/{extracted_numbers}")
+                else:
+                    self.status_label.text = "لم يتم العثور على أرقام داخل الصوت."
+        except Exception as err:
+            self.status_label.text = f"خطأ في معالجة الصوت: {str(err)}"
 
-    def on_start_click(self, instance):
-        self.status_label.text = self.texts[self.current_lang]['listening']
-
-if __name__ == '__main__':
-    AutoDialerApp().run()
+if __name__ == "__main__":
+    WhatsAppAutomationApp().run()

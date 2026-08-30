@@ -61,7 +61,74 @@ jobs:
           yes | buildozer android debug
 
       - name: Upload APK Artifact
+        uses: actions/upload-name: Build Android APK
+
+on:
+  push:
+    branches: [ "main", "master" ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-22.04
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python 3.10
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
+
+      - name: Install system dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y \
+            build-essential \
+            git \
+            ffmpeg \
+            libgstreamer1.0-dev \
+            gstreamer1.0-plugins-base \
+            gstreamer1.0-plugins-good \
+            libsqlite3-dev \
+            sqlite3 \
+            bzip2 \
+            libbz2-dev \
+            libssl-dev \
+            openssl \
+            zlib1g-dev \
+            libffi-dev \
+            patch \
+            autoconf \
+            automake \
+            libtool \
+            pkg-config \
+            cmake \
+            openjdk-17-jdk \
+            zip \
+            unzip
+
+      - name: Install Buildozer and Cython
+        run: |
+          python -m pip install --upgrade pip setuptools
+          python -m pip install "cython<3.0.0" buildozer
+
+      - name: Clear old build cache
+        run: |
+          rm -rf .buildozer
+          rm -rf ~/.buildozer
+
+      - name: Build APK with Buildozer
+        run: |
+          yes | buildozer android debug
+
+      - name: Upload APK Artifact
         uses: actions/upload-artifact@v4
+        with:
+          name: app-debug-apk
+          path: bin/*.apk
+@v4
         with:
           name: app-debug-apk
           path: bin/*.apk

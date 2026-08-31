@@ -7,7 +7,7 @@ from kivy.uix.button import Button
 from kivy.uix.label import Label
 from kivy.utils import platform
 
-# استدعاء أدوات الأندرويد الأصلية للتعرف على الصوت
+# استعاء أدوات الأندرويد الأصلية للتعرف على الصوت
 if platform == 'android':
     from jnius import autoclass, cast
     from android.permissions import request_permissions, Permission

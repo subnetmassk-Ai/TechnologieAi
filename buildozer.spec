@@ -6,8 +6,8 @@ version = 0.1
 source.dir = .
 source.include_exts = py,png,jpg,kv,atlas,wav,spec
 
-# تجنب سحب python3.14 وتقييد الإصدار إلى python3c
-requirements = python3==3.10.12,kivy==2.2.1,requests
+# تجنب وضع رقم إصدار لـ python3 هنا
+requirements = python3,kivy==2.2.1,requests
 
 orientation = portrait
 fullscreen = 0

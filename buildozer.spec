@@ -6,17 +6,16 @@ version = 0.1
 source.dir = .
 source.include_exts = py,png,jpg,kv,atlas,wav,spec
 
-# تجنب وضع رقم إصدار لـ python3 هنا
 requirements = python3,kivy==2.2.1,requests
 
 orientation = portrait
 fullscreen = 0
 
 android.permissions = INTERNET, READ_EXTERNAL_STORAGE, WRITE_EXTERNAL_STORAGE
-android.api = 33
+android.api = 31
 android.minapi = 21
-android.ndk = 25b
-android.build_tools_version = 33.0.2
+android.ndk = 23b
+android.build_tools_version = 31.0.0
 android.accept_sdk_license = True
 android.archs = arm64-v8a
 android.allow_backup = True

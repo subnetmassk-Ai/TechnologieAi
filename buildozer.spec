@@ -1,25 +1,8 @@
-[app]
-title = WhatsApp Voice Assistant
-package.name = whatsappvoiceapp
-package.domain = org.test
-version = 0.1
-source.dir = .
-source.include_exts = py,png,jpg,kv,atlas,wav,spec
-
-requirements = python3,kivy==2.2.1,pyjnius,requests
-
-orientation = portrait
-fullscreen = 0
-
-android.permissions = INTERNET, RECORD_AUDIO, READ_EXTERNAL_STORAGE, WRITE_EXTERNAL_STORAGE
-android.api = 31
+# تعديل إصدارات API و NDK لتتوافق مع بيئة GitHub Actions
+android.api = 33
 android.minapi = 21
-android.ndk = 23b
-android.build_tools_version = 31.0.0
+android.ndk = 25.2.9519653
 android.accept_sdk_license = True
-android.archs = arm64-v8a
-android.allow_backup = True
 
-[buildozer]
-log_level = 2
-warn_on_root = 1
+# تحديد إصدارات المكتبات بوضوح لمنع التعارض أثناء الترجمة
+requirements = python3==3.10.12,kivy==2.2.1,SpeechRecognition,requests

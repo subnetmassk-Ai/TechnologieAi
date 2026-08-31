@@ -19,7 +19,7 @@ source.dir = .
 source.include_exts = py,png,jpg,kv,atlas,wav,mp3
 
 # (list) Application requirements
-requirements = python3==3.10.12,kivy==2.2.1,SpeechRecognition,requests
+requirements = python3==3.10.12,hostpython3==3.10.12,kivy==2.2.1,SpeechRecognition,requests
 
 # (str) Supported orientations
 orientation = portrait
@@ -40,7 +40,7 @@ android.minapi = 21
 android.sdk = 33
 
 # (str) Android NDK version
-androandroid.ndk = 28c
+android.ndk = 28c
 
 # (bool) Accept SDK licenses
 android.accept_sdk_license = True

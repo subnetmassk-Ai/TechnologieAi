@@ -22,7 +22,7 @@ class WhatsAppAutomationApp(App):
         layout = BoxLayout(orientation='vertical', padding=20, spacing=15)
         
         layout.add_widget(Label(
-            text="[b]المساعد الصوتي للواتساب[/b]", 
+            text="[b]الساعد الصوتي للواتساب[/b]", 
             markup=True, 
             font_size='22sp'
         ))

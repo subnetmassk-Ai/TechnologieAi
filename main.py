@@ -36,7 +36,7 @@ class WhatsAppAutomationApp(App):
         layout.add_widget(self.phone_input)
         
         btn_voice = Button(
-            text="🎤 اضغط للتحدث (تحويل الصوت لنص)", 
+            text="🎤 اضغط للتحدث (تحويل اصوت لنص)", 
             size_hint_y=None, 
             height='55dp',
             background_color=(0.2, 0.6, 1, 1)

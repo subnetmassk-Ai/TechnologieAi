@@ -9,13 +9,18 @@ from kivy.uix.label import Label
 from kivy.utils import platform
 
 
-# Android فقط
 if platform == "android":
     from jnius import autoclass, cast
     from android.permissions import request_permissions, Permission
 
-    PythonActivity = autoclass("org.kivy.android.PythonActivity")
-    Intent = autoclass("android.content.Intent")
+    PythonActivity = autoclass(
+        "org.kivy.android.PythonActivity"
+    )
+
+    Intent = autoclass(
+        "android.content.Intent"
+    )
+
     RecognizerIntent = autoclass(
         "android.speech.RecognizerIntent"
     )
@@ -52,7 +57,9 @@ class WhatsAppAutomationApp(App):
             size_hint_y=None,
             height="55dp"
         )
-        btn_voice.bind(on_press=self.start_voice_input)
+        btn_voice.bind(
+            on_press=self.start_voice_input
+        )
         layout.add_widget(btn_voice)
 
         btn_manual = Button(
@@ -60,7 +67,9 @@ class WhatsAppAutomationApp(App):
             size_hint_y=None,
             height="50dp"
         )
-        btn_manual.bind(on_press=self.open_whatsapp)
+        btn_manual.bind(
+            on_press=self.open_whatsapp
+        )
         layout.add_widget(btn_manual)
 
         self.status_label = Label(
@@ -69,7 +78,6 @@ class WhatsAppAutomationApp(App):
         )
         layout.add_widget(self.status_label)
 
-        # طلب صلاحيات Android بعد تشغيل الواجهة
         if platform == "android":
             try:
                 request_permissions([
@@ -77,7 +85,8 @@ class WhatsAppAutomationApp(App):
                 ])
             except Exception as e:
                 self.status_label.text = (
-                    "خطأ في صلاحية الميكروفون: " + str(e)
+                    "خطأ في صلاحية الميكروفون: "
+                    + str(e)
                 )
 
         return layout
@@ -119,7 +128,8 @@ class WhatsAppAutomationApp(App):
 
         except Exception as err:
             self.status_label.text = (
-                "خطأ الميكروفون: " + str(err)
+                "خطأ الميكروفون: "
+                + str(err)
             )
 
     def open_whatsapp(self, instance):
@@ -143,10 +153,6 @@ class WhatsAppAutomationApp(App):
         try:
             if platform == "android":
 
-                Intent = autoclass(
-                    "android.content.Intent"
-                )
-
                 Uri = autoclass(
                     "android.net.Uri"
                 )
@@ -157,7 +163,8 @@ class WhatsAppAutomationApp(App):
                 )
 
                 uri = Uri.parse(
-                    "https://wa.me/" + extracted_numbers
+                    "https://wa.me/"
+                    + extracted_numbers
                 )
 
                 intent = Intent(
@@ -165,16 +172,20 @@ class WhatsAppAutomationApp(App):
                     uri
                 )
 
-                current_activity.startActivity(intent)
+                current_activity.startActivity(
+                    intent
+                )
 
             else:
                 webbrowser.open(
-                    "https://wa.me/" + extracted_numbers
+                    "https://wa.me/"
+                    + extracted_numbers
                 )
 
         except Exception as err:
             self.status_label.text = (
-                "خطأ في فتح الواتساب: " + str(err)
+                "خطأ في فتح الواتساب: "
+                + str(err)
             )
 
 

@@ -1,5 +1,4 @@
 [app]
-
 title = TechnologieAi
 package.name = technologieai
 package.domain = org.test

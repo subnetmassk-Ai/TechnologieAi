@@ -12,22 +12,21 @@ jobs:
     runs-on: ubuntu-22.04
 
     steps:
-
-      - name: Checkout Repository
+      - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Set up Java 17
+      - name: Setup Java 17
         uses: actions/setup-java@v4
         with:
           distribution: temurin
           java-version: '17'
 
-      - name: Set up Python 3.10
+      - name: Setup Python 3.10
         uses: actions/setup-python@v5
         with:
           python-version: '3.10.12'
 
-      - name: Install System Dependencies
+      - name: Install dependencies
         run: |
           sudo apt-get update
 
@@ -49,39 +48,43 @@ jobs:
             pkg-config \
             patch
 
-      - name: Install Python Build Tools
+      - name: Install Python tools
         run: |
           python -m pip install --upgrade pip setuptools wheel
           python -m pip install "cython<3"
-          python -m pip install buildozer
+          python -m pip install "buildozer==1.6.0"
 
-      - name: Prepare Android SDK
+      # قبول تراخيص Android قبل Buildozer
+      - name: Accept Android SDK licenses
         run: |
           yes | sdkmanager --licenses || true
 
+      # تثبيت الأدوات المطلوبة
+      - name: Install Android SDK packages
+        run: |
           sdkmanager \
             "platform-tools" \
             "platforms;android-35" \
             "build-tools;35.0.0" \
             "build-tools;37.0.0"
 
-      - name: Accept Android Licenses
+      # قبول التراخيص مرة ثانية بعد التثبيت
+      - name: Accept licenses again
         run: |
           yes | sdkmanager --licenses || true
 
-      - name: Verify Environment
+      - name: Verify Android SDK
         run: |
-          python --version
-          buildozer --version
-          java -version
+          echo "Android SDK:"
+          echo "$ANDROID_HOME"
 
-          echo "ANDROID_HOME=$ANDROID_HOME"
-          echo "ANDROID_SDK_ROOT=$ANDROID_SDK_ROOT"
+          echo "Build Tools:"
+          ls -lah "$ANDROID_HOME/build-tools/" || true
 
-          ls -la "$ANDROID_HOME/build-tools" || true
-          ls -la "$ANDROID_HOME/build-tools/37.0.0" || true
+          echo "AIDL:"
+          find "$ANDROID_HOME/build-tools" -name aidl -type f -print || true
 
-      - name: Clean Previous Build
+      - name: Clean
         run: |
           rm -rf .buildozer
           rm -rf bin
@@ -90,10 +93,10 @@ jobs:
         run: |
           buildozer -v android debug
 
-      - name: Check APK
+      - name: Show APK
         if: success()
         run: |
-          echo "APK FILES:"
+          echo "APK:"
           find bin -type f -name "*.apk" -ls
 
       - name: Upload APK

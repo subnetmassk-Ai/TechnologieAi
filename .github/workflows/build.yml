@@ -24,15 +24,15 @@ jobs:
       - name: Set up Python 3.10
         uses: actions/setup-python@v5
         with:
-          python-version: '3.10'
+          python-version: '3.10.12'
 
       - name: Install System Dependencies
         run: |
           sudo apt-get update
+
           sudo apt-get install -y \
             build-essential \
             git \
-            python3-dev \
             ffmpeg \
             libsqlite3-dev \
             sqlite3 \
@@ -49,23 +49,43 @@ jobs:
             pkg-config \
             cmake \
             zip \
-            unzip
+            unzip \
+            libltdl-dev
 
-      - name: Install Buildozer
+      - name: Upgrade Python Tools
         run: |
+          python --version
           python -m pip install --upgrade pip setuptools wheel
-          python -m pip install "cython<3.0.0" buildozer
 
-      - name: Clean Build Cache
+      - name: Install Build Tools
+        run: |
+          python -m pip install "cython<3"
+          python -m pip install buildozer
+
+      - name: Verify Build Environment
+        run: |
+          python --version
+          python -c "import sys; print(sys.version)"
+          buildozer --version
+
+      - name: Clean Previous Build
         run: |
           rm -rf .buildozer
           rm -rf bin
 
       - name: Build APK
+        env:
+          P4A_PYTHON3: "3.10"
         run: |
           buildozer -v android debug
 
+      - name: List APK
+        if: success()
+        run: |
+          ls -lah bin/
+
       - name: Upload APK
+        if: success()
         uses: actions/upload-artifact@v4
         with:
           name: app-debug-apk

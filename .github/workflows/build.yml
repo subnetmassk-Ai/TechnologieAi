@@ -26,10 +26,9 @@ jobs:
         with:
           python-version: '3.10.12'
 
-      - name: Install dependencies
+      - name: Install system dependencies
         run: |
           sudo apt-get update
-
           sudo apt-get install -y \
             build-essential \
             git \
@@ -54,37 +53,57 @@ jobs:
           python -m pip install "cython<3"
           python -m pip install "buildozer==1.6.0"
 
-      # قبول تراخيص Android قبل Buildozer
+      - name: Find Android SDK
+        run: |
+          echo "ANDROID_HOME=$ANDROID_HOME"
+          echo "ANDROID_SDK_ROOT=$ANDROID_SDK_ROOT"
+          which sdkmanager || true
+          find "$ANDROID_HOME" -name sdkmanager -type f 2>/dev/null || true
+
       - name: Accept Android SDK licenses
         run: |
-          yes | sdkmanager --licenses || true
+          SDKMANAGER="$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager"
 
-      # تثبيت الأدوات المطلوبة
+          if [ ! -f "$SDKMANAGER" ]; then
+            SDKMANAGER=$(find "$ANDROID_HOME/cmdline-tools" -name sdkmanager -type f | head -1)
+          fi
+
+          echo "Using: $SDKMANAGER"
+
+          yes | "$SDKMANAGER" --sdk_root="$ANDROID_HOME" --licenses || true
+
       - name: Install Android SDK packages
         run: |
-          sdkmanager \
+          SDKMANAGER="$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager"
+
+          if [ ! -f "$SDKMANAGER" ]; then
+            SDKMANAGER=$(find "$ANDROID_HOME/cmdline-tools" -name sdkmanager -type f | head -1)
+          fi
+
+          "$SDKMANAGER" --sdk_root="$ANDROID_HOME" \
             "platform-tools" \
             "platforms;android-35" \
             "build-tools;35.0.0" \
             "build-tools;37.0.0"
 
-      # قبول التراخيص مرة ثانية بعد التثبيت
-      - name: Accept licenses again
+      - name: Accept licenses
         run: |
-          yes | sdkmanager --licenses || true
+          SDKMANAGER="$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager"
 
-      - name: Verify Android SDK
+          if [ ! -f "$SDKMANAGER" ]; then
+            SDKMANAGER=$(find "$ANDROID_HOME/cmdline-tools" -name sdkmanager -type f | head -1)
+          fi
+
+          yes | "$SDKMANAGER" --sdk_root="$ANDROID_HOME" --licenses || true
+
+      - name: Verify SDK
         run: |
-          echo "Android SDK:"
-          echo "$ANDROID_HOME"
+          echo "ANDROID_HOME=$ANDROID_HOME"
+          ls -lah "$ANDROID_HOME/build-tools/"
+          test -f "$ANDROID_HOME/build-tools/37.0.0/aidl"
+          echo "AIDL OK"
 
-          echo "Build Tools:"
-          ls -lah "$ANDROID_HOME/build-tools/" || true
-
-          echo "AIDL:"
-          find "$ANDROID_HOME/build-tools" -name aidl -type f -print || true
-
-      - name: Clean
+      - name: Clean Buildozer
         run: |
           rm -rf .buildozer
           rm -rf bin
@@ -93,10 +112,9 @@ jobs:
         run: |
           buildozer -v android debug
 
-      - name: Show APK
+      - name: Find APK
         if: success()
         run: |
-          echo "APK:"
           find bin -type f -name "*.apk" -ls
 
       - name: Upload APK

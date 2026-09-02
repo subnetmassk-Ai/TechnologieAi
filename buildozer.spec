@@ -1,82 +1,38 @@
-name: Build Android APK
+[app]
 
-on:
-  push:
-    branches:
-      - main
-      - master
-  workflow_dispatch:
+title = TechnologieAi
+package.name = technologieai
+package.domain = org.test
 
-jobs:
-  build:
-    runs-on: ubuntu-22.04
+source.dir = .
+source.include_exts = py,png,jpg,jpeg,kv,atlas,wav,mp3,json
+source.exclude_dirs = .buildozer,bin,.git
 
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
+version = 0.1
 
-      - name: Setup Java 17
-        uses: actions/setup-java@v5
-        with:
-          distribution: temurin
-          java-version: '17'
+requirements = python3==3.10.12,hostpython3==3.10.12,kivy==2.2.1,pyjnius
 
-      - name: Setup Python 3.10
-        uses: actions/setup-python@v6
-        with:
-          python-version: '3.10.12'
+orientation = portrait
+fullscreen = 0
 
-      - name: Install system dependencies
-        run: |
-          sudo apt-get update
+android.api = 33
+android.minapi = 21
+android.sdk = 33
+android.ndk = 25.2.9519653
 
-          sudo apt-get install -y \
-            build-essential \
-            git \
-            zip \
-            unzip \
-            autoconf \
-            automake \
-            cmake \
-            libffi-dev \
-            libssl-dev \
-            libsqlite3-dev \
-            zlib1g-dev \
-            libbz2-dev \
-            libltdl-dev \
-            libtool \
-            pkg-config \
-            patch
+android.archs = arm64-v8a
 
-      - name: Install Buildozer
-        run: |
-          python -m pip install --upgrade pip setuptools wheel
-          python -m pip install "cython<3"
-          python -m pip install "buildozer==1.6.0"
+android.permissions = INTERNET,RECORD_AUDIO
 
-      - name: Verify Buildozer
-        run: |
-          python --version
-          buildozer --version
+android.enable_androidx = True
 
-      - name: Clean
-        run: |
-          rm -rf .buildozer
-          rm -rf bin
+android.allow_backup = True
+android.private_storage = True
 
-      - name: Build APK
-        run: |
-          yes | buildozer android debug
+p4a.branch = master
 
-      - name: Find APK
-        if: success()
-        run: |
-          find bin -type f -name "*.apk" -ls
 
-      - name: Upload APK
-        if: success()
-        uses: actions/upload-artifact@v4
-        with:
-          name: app-debug-apk
-          path: bin/*.apk
-          if-no-files-found: error
+[buildozer]
+
+log_level = 2
+warn_on_root = 1

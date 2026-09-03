@@ -55,6 +55,46 @@ jobs:
             libssl-dev \
             libltdl-dev
 
+      - name: Install Android SDK
+        run: |
+          export ANDROID_HOME="$HOME/.buildozer/android/platform/android-sdk"
+          export ANDROID_SDK_ROOT="$ANDROID_HOME"
+
+          mkdir -p "$ANDROID_HOME/cmdline-tools"
+
+          if [ ! -d "$ANDROID_HOME/cmdline-tools/latest" ]; then
+            cd /tmp
+            wget -q https://dl.google.com/android/repository/commandlinetools-linux-13114758_latest.zip
+            unzip -q commandlinetools-linux-13114758_latest.zip
+
+            mkdir -p "$ANDROID_HOME/cmdline-tools/latest"
+            mv cmdline-tools/* "$ANDROID_HOME/cmdline-tools/latest/"
+          fi
+
+          export PATH="$ANDROID_HOME/cmdline-tools/latest/bin:$ANDROID_HOME/platform-tools:$PATH"
+
+          yes | sdkmanager --licenses || true
+
+          sdkmanager \
+            "platform-tools" \
+            "platforms;android-33" \
+            "build-tools;37.0.0"
+
+          yes | sdkmanager --licenses
+
+          echo "ANDROID_HOME=$ANDROID_HOME" >> "$GITHUB_ENV"
+          echo "ANDROID_SDK_ROOT=$ANDROID_HOME" >> "$GITHUB_ENV"
+          echo "$ANDROID_HOME/cmdline-tools/latest/bin" >> "$GITHUB_PATH"
+          echo "$ANDROID_HOME/platform-tools" >> "$GITHUB_PATH"
+
+      - name: Verify Android SDK
+        run: |
+          echo "ANDROID_HOME=$ANDROID_HOME"
+          sdkmanager --list | head -50
+          echo "Checking AIDL..."
+          ls -la "$ANDROID_HOME/build-tools/37.0.0/"
+          "$ANDROID_HOME/build-tools/37.0.0/aidl" --version
+
       - name: Install Buildozer
         run: |
           python -m pip install --upgrade pip setuptools wheel

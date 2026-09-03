@@ -56,10 +56,12 @@ jobs:
       - name: Setup Android SDK
         uses: android-actions/setup-android@v3
 
-      - name: Install Android SDK components
+      - name: Accept Android SDK licenses
         run: |
           yes | sdkmanager --licenses || true
 
+      - name: Install Android SDK components
+        run: |
           sdkmanager \
             "platform-tools" \
             "platforms;android-33" \
@@ -71,32 +73,63 @@ jobs:
           python -m pip install buildozer==1.6.0
           python -m pip install cython==0.29.36
 
-      - name: Prepare Buildozer Android SDK
+      - name: Prepare Buildozer SDK
         run: |
           SDK="$HOME/.buildozer/android/platform/android-sdk"
 
-          mkdir -p "$SDK"
+          rm -rf "$SDK"
+          mkdir -p "$SDK/tools/bin"
 
-          export ANDROID_SDK_ROOT="$SDK"
-          export ANDROID_HOME="$SDK"
+          SYSTEM_SDK="$ANDROID_SDK_ROOT"
 
-          echo "ANDROID_SDK_ROOT=$SDK" >> "$GITHUB_ENV"
-          echo "ANDROID_HOME=$SDK" >> "$GITHUB_ENV"
+          echo "System SDK:"
+          echo "$SYSTEM_SDK"
 
-          echo "Preparing Buildozer SDK..."
+          echo "Copying Android SDK..."
 
-          mkdir -p "$SDK/licenses"
-          cp -r "$ANDROID_SDK_ROOT/licenses/" "$SDK/" 2>/dev/null || true
+          cp -a "$SYSTEM_SDK/." "$SDK/"
 
-      - name: Clean Buildozer
+          mkdir -p "$SDK/tools/bin"
+
+          ln -sf "$SDK/cmdline-tools/latest/bin/sdkmanager" \
+            "$SDK/tools/bin/sdkmanager"
+
+          ln -sf "$SDK/cmdline-tools/latest/bin/avdmanager" \
+            "$SDK/tools/bin/avdmanager"
+
+          echo "Buildozer sdkmanager:"
+          ls -l "$SDK/tools/bin/sdkmanager"
+
+          echo "sdkmanager test:"
+          "$SDK/tools/bin/sdkmanager" --version
+
+      - name: Clean project build
         run: |
           rm -rf .buildozer
           rm -rf bin
 
+      - name: Recreate Buildozer SDK link
+        run: |
+          SDK="$HOME/.buildozer/android/platform/android-sdk"
+
+          mkdir -p "$SDK/tools/bin"
+
+          if [ -f "$ANDROID_SDK_ROOT/cmdline-tools/latest/bin/sdkmanager" ]; then
+            ln -sf \
+              "$ANDROID_SDK_ROOT/cmdline-tools/latest/bin/sdkmanager" \
+              "$SDK/tools/bin/sdkmanager"
+          fi
+
+          if [ -f "$ANDROID_SDK_ROOT/cmdline-tools/latest/bin/avdmanager" ]; then
+            ln -sf \
+              "$ANDROID_SDK_ROOT/cmdline-tools/latest/bin/avdmanager" \
+              "$SDK/tools/bin/avdmanager"
+          fi
+
+          echo "Final sdkmanager:"
+          ls -l "$SDK/tools/bin/sdkmanager"
+
       - name: Build APK
-        env:
-          ANDROID_HOME: ${{ env.ANDROID_HOME }}
-          ANDROID_SDK_ROOT: ${{ env.ANDROID_SDK_ROOT }}
         run: |
           python -m buildozer -v android debug
 

@@ -9,10 +9,9 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-22.04
 
     steps:
-
       - name: Checkout
         uses: actions/checkout@v4
 
@@ -25,7 +24,7 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
-          python-version: '3.14'
+          python-version: '3.11'
 
       - name: Check Python
         run: |
@@ -34,22 +33,23 @@ jobs:
 
       - name: Install system dependencies
         run: |
-          sudo apt update
-          sudo apt install -y \
+          sudo apt-get update
+          sudo apt-get install -y \
             git \
             zip \
             unzip \
-            openjdk-17-jdk \
             autoconf \
             automake \
             autopoint \
             gettext \
             libtool \
+            libtool-bin \
+            libltdl-dev \
             pkg-config \
             zlib1g-dev \
             libncurses5-dev \
             libncursesw5-dev \
-            libtinfo6 \
+            libtinfo5 \
             cmake \
             libffi-dev \
             libssl-dev \
@@ -83,4 +83,3 @@ jobs:
         with:
           name: MarKoss-APK
           path: bin/*.apk
-          if-no-files-found: error

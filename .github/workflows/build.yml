@@ -56,35 +56,14 @@ jobs:
       - name: Setup Android SDK
         uses: android-actions/setup-android@v3
 
-      - name: Accept Android SDK licenses
+      - name: Install Android SDK components
         run: |
           yes | sdkmanager --licenses || true
 
-      - name: Install Android SDK
-        run: |
           sdkmanager \
             "platform-tools" \
             "platforms;android-33" \
             "build-tools;35.0.0"
-
-      - name: Set Android SDK environment
-        run: |
-          echo "ANDROID_SDK_ROOT=$ANDROID_SDK_ROOT"
-          echo "ANDROID_HOME=$ANDROID_SDK_ROOT"
-          echo "$ANDROID_SDK_ROOT/platform-tools" >> $GITHUB_PATH
-          echo "$ANDROID_SDK_ROOT/build-tools/35.0.0" >> $GITHUB_PATH
-
-          echo "ANDROID_SDK_ROOT=$ANDROID_SDK_ROOT" >> $GITHUB_ENV
-          echo "ANDROID_HOME=$ANDROID_SDK_ROOT" >> $GITHUB_ENV
-
-      - name: Verify Android SDK
-        run: |
-          echo "Android SDK: $ANDROID_SDK_ROOT"
-          echo "Installed Build Tools:"
-          ls -la "$ANDROID_SDK_ROOT/build-tools"
-          echo "Checking AIDL..."
-          test -x "$ANDROID_SDK_ROOT/build-tools/35.0.0/aidl"
-          echo "AIDL OK"
 
       - name: Install Buildozer
         run: |
@@ -92,13 +71,32 @@ jobs:
           python -m pip install buildozer==1.6.0
           python -m pip install cython==0.29.36
 
-      - name: Clean old build files
+      - name: Prepare Buildozer Android SDK
+        run: |
+          SDK="$HOME/.buildozer/android/platform/android-sdk"
+
+          mkdir -p "$SDK"
+
+          export ANDROID_SDK_ROOT="$SDK"
+          export ANDROID_HOME="$SDK"
+
+          echo "ANDROID_SDK_ROOT=$SDK" >> "$GITHUB_ENV"
+          echo "ANDROID_HOME=$SDK" >> "$GITHUB_ENV"
+
+          echo "Preparing Buildozer SDK..."
+
+          mkdir -p "$SDK/licenses"
+          cp -r "$ANDROID_SDK_ROOT/licenses/" "$SDK/" 2>/dev/null || true
+
+      - name: Clean Buildozer
         run: |
           rm -rf .buildozer
           rm -rf bin
-          rm -rf ~/.buildozer/android/platform/python-for-android
 
       - name: Build APK
+        env:
+          ANDROID_HOME: ${{ env.ANDROID_HOME }}
+          ANDROID_SDK_ROOT: ${{ env.ANDROID_SDK_ROOT }}
         run: |
           python -m buildozer -v android debug
 

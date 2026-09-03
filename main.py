@@ -13,39 +13,156 @@ from kivy.uix.textinput import TextInput
 class MarKossApp(App):
 
     VOICE_REQUEST = 100
-    CONTACT_PERMISSION_REQUEST = 200
 
     def build(self):
         self.title = "MarKoss"
-
         self.contacts = []
+        self.language = "ar"
+
+        self.tr = {
+            "ar": {
+                "title": "MarKoss AI",
+                "subtitle": "مساعدك الذكي",
+                "language": "🌐 English",
+                "voice": "🎙️ البحث الصوتي",
+                "manual": "⌨️ البحث اليدوي",
+                "name_search": "👤 البحث حسب الاسم",
+                "contacts": "👥 اختيار الاسم من جهات الاتصال",
+                "whatsapp": "🟢 WhatsApp",
+                "call": "📞 اتصال",
+                "manual_hint": "أدخل رقم الهاتف",
+                "name_hint": "أدخل اسم جهة الاتصال",
+                "ready": "جاهز 🚀",
+                "enter_number": "⚠️ أدخل رقم الهاتف",
+                "enter_name": "⚠️ أدخل اسم جهة الاتصال",
+                "not_found": "❌ لم أجد جهة الاتصال",
+                "invalid": "❌ الرقم غير صالح",
+                "whatsapp_open": "🟢 تم فتح WhatsApp",
+                "whatsapp_error": "❌ تعذر فتح WhatsApp",
+                "phone_open": "📞 تم فتح الهاتف",
+                "phone_error": "❌ تعذر فتح الهاتف",
+                "speaking": "🎙️ تحدث الآن...",
+                "voice_error": "❌ التعرف الصوتي غير متاح",
+                "no_voice": "لم يتم التقاط الصوت",
+                "not_understood": "❌ لم أفهم الكلام",
+                "heard": "سمعت: ",
+                "number_found": "🔢 تم استخراج الرقم: ",
+                "contact_found": "👤 تم العثور على: ",
+                "reading_contacts": "👥 قراءة جهات الاتصال...",
+                "contacts_loaded": "👥 تم تحميل {count} جهة اتصال",
+                "contacts_error": "❌ تعذر قراءة جهات الاتصال",
+                "contacts_title": "جهات الاتصال",
+                "search_contact_hint": "ابحث عن اسم...",
+                "select_contact": "اختر جهة اتصال",
+                "contact_ready": "👤 {name} جاهز",
+                "no_result": "❌ لم أجد رقم أو اسم",
+            },
+
+            "en": {
+                "title": "MarKoss AI",
+                "subtitle": "Your Smart Assistant",
+                "language": "🌐 العربية",
+                "voice": "🎙️ Voice Search",
+                "manual": "⌨️ Manual Search",
+                "name_search": "👤 Search by Name",
+                "contacts": "👥 Choose from Contacts",
+                "whatsapp": "🟢 WhatsApp",
+                "call": "📞 Call",
+                "manual_hint": "Enter phone number",
+                "name_hint": "Enter contact name",
+                "ready": "Ready 🚀",
+                "enter_number": "⚠️ Enter a phone number",
+                "enter_name": "⚠️ Enter contact name",
+                "not_found": "❌ Contact not found",
+                "invalid": "❌ Invalid number",
+                "whatsapp_open": "🟢 WhatsApp opened",
+                "whatsapp_error": "❌ Could not open WhatsApp",
+                "phone_open": "📞 Phone opened",
+                "phone_error": "❌ Could not open phone",
+                "speaking": "🎙️ Speak now...",
+                "voice_error": "❌ Voice recognition unavailable",
+                "no_voice": "No voice was captured",
+                "not_understood": "❌ I could not understand",
+                "heard": "Heard: ",
+                "number_found": "🔢 Number extracted: ",
+                "contact_found": "👤 Found: ",
+                "reading_contacts": "👥 Reading contacts...",
+                "contacts_loaded": "👥 Loaded {count} contacts",
+                "contacts_error": "❌ Could not read contacts",
+                "contacts_title": "Contacts",
+                "search_contact_hint": "Search name...",
+                "select_contact": "Choose a contact",
+                "contact_ready": "👤 {name} ready",
+                "no_result": "❌ No number or name found",
+            }
+        }
 
         root = BoxLayout(
             orientation="vertical",
-            padding=dp(20),
-            spacing=dp(12)
+            padding=[dp(20), dp(10), dp(20), dp(20)],
+            spacing=dp(10)
         )
 
-        title = Label(
-            text="MarKoss AI",
+        # =========================
+        # LANGUAGE - TOP RIGHT
+        # =========================
+
+        language_bar = BoxLayout(
+            orientation="horizontal",
+            size_hint_y=None,
+            height=dp(45)
+        )
+
+        language_bar.add_widget(
+            Label(text="")
+        )
+
+        self.language_button = Button(
+            text=self.t("language"),
+            size_hint_x=None,
+            width=dp(130),
+            font_size="16sp"
+        )
+
+        self.language_button.bind(
+            on_press=self.toggle_language
+        )
+
+        language_bar.add_widget(
+            self.language_button
+        )
+
+        root.add_widget(language_bar)
+
+        # =========================
+        # TITLE
+        # =========================
+
+        self.title_label = Label(
+            text=self.t("title"),
             font_size="32sp",
             bold=True,
             size_hint_y=None,
             height=dp(55)
         )
 
-        subtitle = Label(
-            text="مساعدك الذكي",
+        root.add_widget(self.title_label)
+
+        self.subtitle_label = Label(
+            text=self.t("subtitle"),
             font_size="18sp",
             size_hint_y=None,
             height=dp(35)
         )
 
-        root.add_widget(title)
-        root.add_widget(subtitle)
+        root.add_widget(self.subtitle_label)
+
+        # =========================
+        # INPUT
+        # =========================
 
         self.input_box = TextInput(
-            hint_text="اكتب رقم الهاتف أو اسم جهة الاتصال",
+            hint_text=self.t("manual_hint"),
             multiline=False,
             font_size="19sp",
             size_hint_y=None,
@@ -54,53 +171,82 @@ class MarKossApp(App):
 
         root.add_widget(self.input_box)
 
-        whatsapp = Button(
-            text="🟢  فتح WhatsApp",
-            font_size="20sp",
-            size_hint_y=None,
-            height=dp(58)
-        )
-        whatsapp.bind(on_press=self.open_whatsapp)
-        root.add_widget(whatsapp)
+        # =========================
+        # SEARCH OPTIONS
+        # =========================
 
-        phone = Button(
-            text="📞  اتصال",
-            font_size="20sp",
+        self.voice_button = Button(
+            text=self.t("voice"),
+            font_size="19sp",
             size_hint_y=None,
-            height=dp(58)
+            height=dp(55)
         )
-        phone.bind(on_press=self.call_number)
-        root.add_widget(phone)
+        self.voice_button.bind(
+            on_press=self.voice_search
+        )
+        root.add_widget(self.voice_button)
 
-        voice = Button(
-            text="🎙️  بحث صوتي",
-            font_size="20sp",
+        self.manual_button = Button(
+            text=self.t("manual"),
+            font_size="19sp",
             size_hint_y=None,
-            height=dp(58)
+            height=dp(55)
         )
-        voice.bind(on_press=self.voice_search)
-        root.add_widget(voice)
+        self.manual_button.bind(
+            on_press=self.manual_search
+        )
+        root.add_widget(self.manual_button)
 
-        contacts = Button(
-            text="👥  جهات الاتصال",
-            font_size="20sp",
+        self.name_button = Button(
+            text=self.t("name_search"),
+            font_size="19sp",
             size_hint_y=None,
-            height=dp(58)
+            height=dp(55)
         )
-        contacts.bind(on_press=self.load_contacts)
-        root.add_widget(contacts)
+        self.name_button.bind(
+            on_press=self.name_search
+        )
+        root.add_widget(self.name_button)
 
-        search = Button(
-            text="🔎  بحث بالاسم",
+        self.contacts_button = Button(
+            text=self.t("contacts"),
+            font_size="19sp",
+            size_hint_y=None,
+            height=dp(55)
+        )
+        self.contacts_button.bind(
+            on_press=self.load_contacts
+        )
+        root.add_widget(self.contacts_button)
+
+        # =========================
+        # ACTIONS
+        # =========================
+
+        self.whatsapp_button = Button(
+            text=self.t("whatsapp"),
             font_size="20sp",
             size_hint_y=None,
             height=dp(58)
         )
-        search.bind(on_press=self.search_contact)
-        root.add_widget(search)
+        self.whatsapp_button.bind(
+            on_press=self.open_whatsapp
+        )
+        root.add_widget(self.whatsapp_button)
+
+        self.call_button = Button(
+            text=self.t("call"),
+            font_size="20sp",
+            size_hint_y=None,
+            height=dp(58)
+        )
+        self.call_button.bind(
+            on_press=self.call_number
+        )
+        root.add_widget(self.call_button)
 
         self.status = Label(
-            text="جاهز 🚀",
+            text=self.t("ready"),
             font_size="16sp"
         )
 
@@ -108,15 +254,84 @@ class MarKossApp(App):
 
         return root
 
-    # ==================================================
-    # تنظيف وتحويل الرقم
-    # ==================================================
+    # =========================
+    # LANGUAGE
+    # =========================
+
+    def t(self, key):
+        return self.tr[self.language][key]
+
+    def toggle_language(self, instance):
+        if self.language == "ar":
+            self.language = "en"
+        else:
+            self.language = "ar"
+
+        self.update_language()
+
+    def update_language(self):
+        self.language_button.text = self.t("language")
+
+        self.title_label.text = self.t("title")
+        self.subtitle_label.text = self.t("subtitle")
+
+        self.voice_button.text = self.t("voice")
+        self.manual_button.text = self.t("manual")
+        self.name_button.text = self.t("name_search")
+        self.contacts_button.text = self.t("contacts")
+        self.whatsapp_button.text = self.t("whatsapp")
+        self.call_button.text = self.t("call")
+
+        if self.input_box.text.strip() == "":
+            self.input_box.hint_text = self.t("manual_hint")
+
+        self.status.text = self.t("ready")
+
+    # =========================
+    # MANUAL SEARCH
+    # =========================
+
+    def manual_search(self, instance):
+        self.input_box.hint_text = self.t("manual_hint")
+        self.input_box.focus = True
+
+    # =========================
+    # SEARCH BY NAME
+    # =========================
+
+    def name_search(self, instance):
+        self.input_box.hint_text = self.t("name_hint")
+
+        name = self.input_box.text.strip()
+
+        if not name:
+            self.status.text = self.t("enter_name")
+            self.input_box.focus = True
+            return
+
+        if not self.contacts:
+            self.load_contacts(instance)
+            return
+
+        contact = self.find_contact(name)
+
+        if contact:
+            self.input_box.text = contact["number"]
+
+            self.status.text = (
+                self.t("contact_found")
+                + contact["name"]
+            )
+        else:
+            self.status.text = self.t("not_found")
+
+    # =========================
+    # PHONE NUMBER
+    # =========================
 
     def clean_number(self, number):
-
         number = str(number).strip()
 
-        # تحويل الأرقام العربية إلى إنجليزية
         arabic_digits = str.maketrans(
             "٠١٢٣٤٥٦٧٨٩",
             "0123456789"
@@ -124,10 +339,12 @@ class MarKossApp(App):
 
         number = number.translate(arabic_digits)
 
-        # الاحتفاظ بالأرقام فقط
-        number = re.sub(r"[^0-9]", "", number)
+        number = re.sub(
+            r"[^0-9]",
+            "",
+            number
+        )
 
-        # لبنان
         if number.startswith("00961"):
             number = number[2:]
 
@@ -139,59 +356,47 @@ class MarKossApp(App):
 
         return number
 
-    # ==================================================
-    # فحص الرقم
-    # ==================================================
-
     def valid_number(self, number):
-
         number = self.clean_number(number)
 
         if not number:
             return False
 
-        # رقم لبناني
         if len(number) == 11 and number.startswith("961"):
             return True
 
-        # رقم دولي عام
         if 8 <= len(number) <= 15:
             return True
 
         return False
 
-    # ==================================================
-    # WhatsApp
-    # ==================================================
+    # =========================
+    # WHATSAPP
+    # =========================
 
     def open_whatsapp(self, instance):
-
         value = self.input_box.text.strip()
 
         if not value:
-            self.status.text = "⚠️ أدخل رقم أو اسم أولاً"
+            self.status.text = self.t("enter_number")
             return
 
-        # إذا كان اسم جهة اتصال
         if not re.search(r"\d", value):
-
             number = self.find_contact_number(value)
 
             if not number:
-                self.status.text = "❌ لم أجد جهة الاتصال"
+                self.status.text = self.t("not_found")
                 return
-
         else:
             number = value
 
         number = self.clean_number(number)
 
         if not self.valid_number(number):
-            self.status.text = "❌ الرقم غير صالح"
+            self.status.text = self.t("invalid")
             return
 
         try:
-
             subprocess.run(
                 [
                     "am",
@@ -203,43 +408,38 @@ class MarKossApp(App):
                 ]
             )
 
-            self.status.text = "🟢 تم فتح WhatsApp"
+            self.status.text = self.t("whatsapp_open")
 
-        except Exception as e:
+        except Exception:
+            self.status.text = self.t("whatsapp_error")
 
-            self.status.text = "❌ تعذر فتح WhatsApp"
-
-    # ==================================================
-    # اتصال
-    # ==================================================
+    # =========================
+    # CALL
+    # =========================
 
     def call_number(self, instance):
-
         value = self.input_box.text.strip()
 
         if not value:
-            self.status.text = "⚠️ أدخل رقم أو اسم أولاً"
+            self.status.text = self.t("enter_number")
             return
 
         if not re.search(r"\d", value):
-
             number = self.find_contact_number(value)
 
             if not number:
-                self.status.text = "❌ لم أجد جهة الاتصال"
+                self.status.text = self.t("not_found")
                 return
-
         else:
             number = value
 
         number = self.clean_number(number)
 
         if not self.valid_number(number):
-            self.status.text = "❌ الرقم غير صالح"
+            self.status.text = self.t("invalid")
             return
 
         try:
-
             subprocess.run(
                 [
                     "am",
@@ -251,22 +451,19 @@ class MarKossApp(App):
                 ]
             )
 
-            self.status.text = "📞 تم فتح الهاتف"
+            self.status.text = self.t("phone_open")
 
         except Exception:
+            self.status.text = self.t("phone_error")
 
-            self.status.text = "❌ تعذر فتح الهاتف"
-
-    # ==================================================
-    # البحث الصوتي
-    # ==================================================
+    # =========================
+    # VOICE SEARCH
+    # =========================
 
     def voice_search(self, instance):
-
-        self.status.text = "🎙️ تحدث الآن..."
+        self.status.text = self.t("speaking")
 
         try:
-
             from jnius import autoclass
 
             PythonActivity = autoclass(
@@ -290,9 +487,20 @@ class MarKossApp(App):
                 RecognizerIntent.LANGUAGE_MODEL_FREE_FORM
             )
 
+            if self.language == "ar":
+                intent.putExtra(
+                    RecognizerIntent.EXTRA_LANGUAGE,
+                    "ar-LB"
+                )
+            else:
+                intent.putExtra(
+                    RecognizerIntent.EXTRA_LANGUAGE,
+                    "en-US"
+                )
+
             intent.putExtra(
                 RecognizerIntent.EXTRA_PROMPT,
-                "تحدث الآن"
+                self.t("speaking")
             )
 
             PythonActivity.mActivity.startActivityForResult(
@@ -301,12 +509,7 @@ class MarKossApp(App):
             )
 
         except Exception:
-
-            self.status.text = "❌ التعرف الصوتي غير متاح"
-
-    # ==================================================
-    # استقبال نتيجة الصوت
-    # ==================================================
+            self.status.text = self.t("voice_error")
 
     def on_activity_result(
         self,
@@ -314,12 +517,10 @@ class MarKossApp(App):
         result_code,
         intent
     ):
-
         if request_code != self.VOICE_REQUEST:
             return
 
         try:
-
             from jnius import autoclass
 
             Activity = autoclass(
@@ -327,7 +528,7 @@ class MarKossApp(App):
             )
 
             if result_code != Activity.RESULT_OK:
-                self.status.text = "لم يتم التقاط الصوت"
+                self.status.text = self.t("no_voice")
                 return
 
             results = intent.getStringArrayListExtra(
@@ -335,54 +536,48 @@ class MarKossApp(App):
             )
 
             if not results:
-                self.status.text = "❌ لم أفهم الكلام"
+                self.status.text = self.t("not_understood")
                 return
 
             text = str(results.get(0))
 
-            self.status.text = "سمعت: " + text
+            self.status.text = (
+                self.t("heard") + text
+            )
 
-            # البحث عن رقم
             number = self.extract_spoken_number(text)
 
             if number:
-
                 self.input_box.text = number
 
                 self.status.text = (
-                    "🔢 تم استخراج الرقم: " + number
+                    self.t("number_found") + number
                 )
 
                 return
 
-            # البحث عن اسم
             contact = self.find_contact(text)
 
             if contact:
-
                 self.input_box.text = contact["name"]
 
                 self.status.text = (
-                    "👤 تم العثور على: "
+                    self.t("contact_found")
                     + contact["name"]
                 )
 
                 return
 
-            self.status.text = "❌ لم أجد رقم أو اسم"
+            self.status.text = self.t("no_result")
 
         except Exception:
+            self.status.text = self.t("not_understood")
 
-            self.status.text = (
-                "❌ حدث خطأ في قراءة الصوت"
-            )
-
-    # ==================================================
-    # استخراج رقم من الكلام
-    # ==================================================
+    # =========================
+    # VOICE NUMBER EXTRACTION
+    # =========================
 
     def extract_spoken_number(self, text):
-
         arabic_digits = str.maketrans(
             "٠١٢٣٤٥٦٧٨٩",
             "0123456789"
@@ -390,16 +585,22 @@ class MarKossApp(App):
 
         text = text.translate(arabic_digits)
 
-        digits = re.findall(r"\d+", text)
+        digits = re.findall(
+            r"\d+",
+            text
+        )
 
         if digits:
-
             number = "".join(digits)
 
             if len(number) >= 8:
                 return self.clean_number(number)
 
-        words = text.lower().replace("-", " ").split()
+        words = (
+            text.lower()
+            .replace("-", " ")
+            .split()
+        )
 
         numbers = {
             "صفر": "0",
@@ -421,13 +622,23 @@ class MarKossApp(App):
             "تمانية": "8",
             "ثمان": "8",
             "تسعة": "9",
-            "تسع": "9"
+            "تسع": "9",
+
+            "zero": "0",
+            "one": "1",
+            "two": "2",
+            "three": "3",
+            "four": "4",
+            "five": "5",
+            "six": "6",
+            "seven": "7",
+            "eight": "8",
+            "nine": "9"
         }
 
         result = ""
 
         for word in words:
-
             if word in numbers:
                 result += numbers[word]
 
@@ -436,14 +647,12 @@ class MarKossApp(App):
 
         return ""
 
-    # ==================================================
-    # طلب صلاحية جهات الاتصال
-    # ==================================================
+    # =========================
+    # CONTACT PERMISSION
+    # =========================
 
     def request_contacts_permission(self):
-
         try:
-
             from android.permissions import request_permissions
             from android.permissions import Permission
 
@@ -456,19 +665,16 @@ class MarKossApp(App):
             return True
 
         except Exception:
-
             return False
 
-    # ==================================================
-    # قراءة جهات الاتصال
-    # ==================================================
+    # =========================
+    # LOAD CONTACTS
+    # =========================
 
     def load_contacts(self, instance):
-
-        self.status.text = "👥 قراءة جهات الاتصال..."
+        self.status.text = self.t("reading_contacts")
 
         try:
-
             self.request_contacts_permission()
 
             from jnius import autoclass
@@ -477,13 +683,21 @@ class MarKossApp(App):
                 "org.kivy.android.PythonActivity"
             )
 
-            ContentResolver = PythonActivity.mActivity.getContentResolver()
+            ContentResolver = (
+                PythonActivity
+                .mActivity
+                .getContentResolver()
+            )
 
             ContactsContract = autoclass(
                 "android.provider.ContactsContract"
             )
 
-            Phone = ContactsContract.CommonDataKinds.Phone
+            Phone = (
+                ContactsContract
+                .CommonDataKinds
+                .Phone
+            )
 
             cursor = ContentResolver.query(
                 Phone.CONTENT_URI,
@@ -496,7 +710,6 @@ class MarKossApp(App):
             contacts = []
 
             if cursor:
-
                 name_index = cursor.getColumnIndex(
                     Phone.DISPLAY_NAME
                 )
@@ -506,7 +719,6 @@ class MarKossApp(App):
                 )
 
                 while cursor.moveToNext():
-
                     name = cursor.getString(
                         name_index
                     )
@@ -526,26 +738,24 @@ class MarKossApp(App):
 
             self.contacts = contacts
 
-            self.status.text = (
-                "👥 تم تحميل "
-                + str(len(self.contacts))
-                + " جهة اتصال"
+            self.status.text = self.t(
+                "contacts_loaded"
+            ).format(
+                count=len(self.contacts)
             )
 
             self.show_contacts()
 
         except Exception:
-
-            self.status.text = (
-                "❌ تعذر قراءة جهات الاتصال"
+            self.status.text = self.t(
+                "contacts_error"
             )
 
-    # ==================================================
-    # عرض جهات الاتصال
-    # ==================================================
+    # =========================
+    # CONTACT POPUP
+    # =========================
 
     def show_contacts(self):
-
         layout = BoxLayout(
             orientation="vertical",
             padding=dp(10),
@@ -553,7 +763,9 @@ class MarKossApp(App):
         )
 
         search_box = TextInput(
-            hint_text="ابحث عن اسم...",
+            hint_text=self.t(
+                "search_contact_hint"
+            ),
             multiline=False,
             size_hint_y=None,
             height=dp(50)
@@ -562,7 +774,7 @@ class MarKossApp(App):
         layout.add_widget(search_box)
 
         result_label = Label(
-            text="اختر جهة اتصال",
+            text=self.t("select_contact"),
             size_hint_y=None,
             height=dp(40)
         )
@@ -577,13 +789,12 @@ class MarKossApp(App):
         layout.add_widget(buttons)
 
         popup = Popup(
-            title="جهات الاتصال",
+            title=self.t("contacts_title"),
             content=layout,
             size_hint=(0.9, 0.85)
         )
 
         def refresh(*args):
-
             buttons.clear_widgets()
 
             query = search_box.text.strip().lower()
@@ -592,13 +803,18 @@ class MarKossApp(App):
 
             for contact in self.contacts:
 
-                if query and query not in contact["name"].lower():
+                if (
+                    query
+                    and query not in contact["name"].lower()
+                ):
                     continue
 
                 button = Button(
-                    text=contact["name"]
-                    + "\n"
-                    + contact["number"],
+                    text=(
+                        contact["name"]
+                        + "\n"
+                        + contact["number"]
+                    ),
                     size_hint_y=None,
                     height=dp(60)
                 )
@@ -607,13 +823,12 @@ class MarKossApp(App):
                     instance,
                     c=contact
                 ):
-
                     self.input_box.text = c["number"]
 
-                    self.status.text = (
-                        "👤 "
-                        + c["name"]
-                        + " جاهز"
+                    self.status.text = self.t(
+                        "contact_ready"
+                    ).format(
+                        name=c["name"]
                     )
 
                     popup.dismiss()
@@ -637,72 +852,24 @@ class MarKossApp(App):
 
         popup.open()
 
-    # ==================================================
-    # البحث بالاسم
-    # ==================================================
-
-    def search_contact(self, instance):
-
-        name = self.input_box.text.strip()
-
-        if not name:
-            self.status.text = (
-                "⚠️ اكتب اسم جهة الاتصال"
-            )
-            return
-
-        if not self.contacts:
-
-            self.load_contacts(instance)
-            return
-
-        contact = self.find_contact(name)
-
-        if contact:
-
-            self.input_box.text = contact["number"]
-
-            self.status.text = (
-                "👤 "
-                + contact["name"]
-                + " → "
-                + contact["number"]
-            )
-
-        else:
-
-            self.status.text = (
-                "❌ لم أجد جهة الاتصال"
-            )
-
-    # ==================================================
-    # إيجاد جهة اتصال
-    # ==================================================
+    # =========================
+    # FIND CONTACT
+    # =========================
 
     def find_contact(self, name):
-
         name = str(name).strip().lower()
 
         for contact in self.contacts:
-
             if name == contact["name"].lower():
-
                 return contact
 
         for contact in self.contacts:
-
             if name in contact["name"].lower():
-
                 return contact
 
         return None
 
-    # ==================================================
-    # الحصول على رقم جهة اتصال
-    # ==================================================
-
     def find_contact_number(self, name):
-
         contact = self.find_contact(name)
 
         if contact:

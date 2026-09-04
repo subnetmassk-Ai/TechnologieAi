@@ -63,17 +63,13 @@ jobs:
           python -m pip install --upgrade pip setuptools wheel
           python -m pip install "buildozer==1.6.0"
 
-      - name: Clean old Buildozer files
+      - name: Remove old local build directory
         run: |
           rm -rf .buildozer
-          rm -rf ~/.buildozer/android/platform/build-*
-          rm -rf ~/.buildozer/android/platform/python-for-android
+          rm -rf bin
 
-      - name: Build APK
-        env:
-          P4A_RELEASE: "0"
+      - name: Build MarKoss APK
         run: |
-          python -m buildozer android clean
           python -m buildozer -v android debug
 
       - name: Upload APK

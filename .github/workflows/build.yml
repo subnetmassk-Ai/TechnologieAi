@@ -12,6 +12,7 @@ jobs:
     runs-on: ubuntu-22.04
 
     steps:
+
       - name: Checkout
         uses: actions/checkout@v4
 
@@ -30,6 +31,7 @@ jobs:
         run: |
           python --version
           python -c "import sys; print(sys.executable)"
+          python -c "import sys; print(sys.version)"
 
       - name: Install system dependencies
         run: |
@@ -57,7 +59,8 @@ jobs:
 
       - name: Upgrade pip
         run: |
-          python -m pip install --upgrade pip setuptools wheel
+          python -m pip install --upgrade pip
+          python -m pip install setuptools wheel
 
       - name: Install Buildozer
         run: |
@@ -69,25 +72,34 @@ jobs:
 
       - name: Verify Build Environment
         run: |
+          echo "===== PYTHON ====="
           python --version
-          python -c "import sys; print('Python:', sys.version)"
+          python -c "import sys; print(sys.executable)"
+          python -c "import sys; print(sys.version)"
+
+          echo "===== BUILDOZER ====="
           buildozer --version
+
+          echo "===== CYTHON ====="
           cython --version
 
       - name: Clean previous build
         run: |
           rm -rf .buildozer
           rm -rf bin
+          rm -f build.log
 
       - name: Build MarKoss APK
         env:
           P4A_IS_BUILDING_FOR_DISTRIBUTION: "0"
         run: |
-          yes | buildozer -v android debug
+          set -o pipefail
+          buildozer -v android debug 2>&1 | tee build.log
 
       - name: Show APK
         if: success()
         run: |
+          echo "===== APK FILES ====="
           ls -lah bin/
 
       - name: Upload APK
@@ -96,3 +108,11 @@ jobs:
         with:
           name: MarKoss-APK
           path: bin/*.apk
+
+      - name: Upload full build log
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: MarKoss-build-log
+          path: build.log
+          if-no-files-found: warn

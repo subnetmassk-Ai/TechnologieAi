@@ -9,8 +9,7 @@ source.include_exts = py,png,jpg,jpeg,kv,atlas,wav,mp3
 
 version = 0.1
 
-requirements = python3==3.10.12,kivy==2.3.1,requests,legacy-cgi
-
+requirements = python3==3.10.12,hostpython3==3.10.12,kivy==2.3.1,requests,legacy-cgi
 orientation = portrait
 fullscreen = 0
 

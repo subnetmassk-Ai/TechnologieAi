@@ -15,16 +15,16 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Set up Java
+      - name: Set up Java 17
         uses: actions/setup-java@v4
         with:
           distribution: temurin
           java-version: '17'
 
-      - name: Set up Python
+      - name: Set up Python 3.10
         uses: actions/setup-python@v5
         with:
-          python-version: '3.11'
+          python-version: '3.10.12'
 
       - name: Check Python
         run: |
@@ -55,30 +55,43 @@ jobs:
             libssl-dev \
             build-essential
 
+      - name: Upgrade pip
+        run: |
+          python -m pip install --upgrade pip setuptools wheel
+
       - name: Install Buildozer
         run: |
-          python -m pip install --upgrade pip
-          python -m pip install setuptools wheel
-          python -m pip install legacy-cgi
+          python -m pip install buildozer==1.6.0
+
+      - name: Install Cython
+        run: |
           python -m pip install cython==0.29.34
-          python -m pip install buildozer
+
+      - name: Verify Build Environment
+        run: |
+          python --version
+          python -c "import sys; print('Python:', sys.version)"
+          buildozer --version
+          cython --version
 
       - name: Clean previous build
         run: |
           rm -rf .buildozer
           rm -rf bin
 
-      - name: Build APK
+      - name: Build MarKoss APK
         env:
           P4A_IS_BUILDING_FOR_DISTRIBUTION: "0"
         run: |
           yes | buildozer -v android debug
 
       - name: Show APK
+        if: success()
         run: |
           ls -lah bin/
 
       - name: Upload APK
+        if: success()
         uses: actions/upload-artifact@v4
         with:
           name: MarKoss-APK

@@ -9,12 +9,12 @@ source.include_exts = py,png,jpg,jpeg,kv,atlas,wav,mp3
 
 version = 0.1
 
-requirements = python3,kivy==2.3.1,requests,legacy-cgi
+requirements = python3==3.10.12,kivy==2.3.1,requests,legacy-cgi
 
 orientation = portrait
 fullscreen = 0
 
-android.api = 36
+android.api = 33
 android.minapi = 23
 android.ndk = 28c
 android.ndk_api = 23
@@ -25,11 +25,8 @@ android.archs = arm64-v8a
 
 android.accept_sdk_license = True
 
-p4a.branch = develop
 
 [buildozer]
 
 log_level = 2
 warn_on_root = 1
-
-

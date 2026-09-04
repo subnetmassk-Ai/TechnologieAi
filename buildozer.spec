@@ -1,4 +1,5 @@
 [app]
+
 title = MarKoss
 package.name = markoss
 package.domain = org.markoss
@@ -8,7 +9,7 @@ source.include_exts = py,png,jpg,jpeg,kv,atlas,wav,mp3
 
 version = 0.1
 
-requirements = python3==3.10.15,kivy==2.3.1,requests,legacy-cgi
+requirements = python3==3.10.15,hostpython3==3.10.15,kivy==2.3.1,requests,legacy-cgi
 
 orientation = portrait
 fullscreen = 0
@@ -21,10 +22,12 @@ android.ndk_api = 23
 android.permissions = INTERNET,RECORD_AUDIO,READ_CONTACTS
 
 android.archs = arm64-v8a
+
 android.accept_sdk_license = True
 
-p4a.branch = develop
+p4a.branch = master
 
 [buildozer]
+
 log_level = 2
 warn_on_root = 1

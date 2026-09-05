@@ -103,19 +103,13 @@ class MarKossApp(App):
             spacing=dp(10)
         )
 
-        # =========================
-        # LANGUAGE - TOP RIGHT
-        # =========================
-
         language_bar = BoxLayout(
             orientation="horizontal",
             size_hint_y=None,
             height=dp(45)
         )
 
-        language_bar.add_widget(
-            Label(text="")
-        )
+        language_bar.add_widget(Label(text=""))
 
         self.language_button = Button(
             text=self.t("language"),
@@ -128,15 +122,8 @@ class MarKossApp(App):
             on_press=self.toggle_language
         )
 
-        language_bar.add_widget(
-            self.language_button
-        )
-
+        language_bar.add_widget(self.language_button)
         root.add_widget(language_bar)
-
-        # =========================
-        # TITLE
-        # =========================
 
         self.title_label = Label(
             text=self.t("title"),
@@ -157,10 +144,6 @@ class MarKossApp(App):
 
         root.add_widget(self.subtitle_label)
 
-        # =========================
-        # INPUT
-        # =========================
-
         self.input_box = TextInput(
             hint_text=self.t("manual_hint"),
             multiline=False,
@@ -171,19 +154,17 @@ class MarKossApp(App):
 
         root.add_widget(self.input_box)
 
-        # =========================
-        # SEARCH OPTIONS
-        # =========================
-
         self.voice_button = Button(
             text=self.t("voice"),
             font_size="19sp",
             size_hint_y=None,
             height=dp(55)
         )
+
         self.voice_button.bind(
             on_press=self.voice_search
         )
+
         root.add_widget(self.voice_button)
 
         self.manual_button = Button(
@@ -192,9 +173,11 @@ class MarKossApp(App):
             size_hint_y=None,
             height=dp(55)
         )
+
         self.manual_button.bind(
             on_press=self.manual_search
         )
+
         root.add_widget(self.manual_button)
 
         self.name_button = Button(
@@ -203,9 +186,11 @@ class MarKossApp(App):
             size_hint_y=None,
             height=dp(55)
         )
+
         self.name_button.bind(
             on_press=self.name_search
         )
+
         root.add_widget(self.name_button)
 
         self.contacts_button = Button(
@@ -214,14 +199,12 @@ class MarKossApp(App):
             size_hint_y=None,
             height=dp(55)
         )
+
         self.contacts_button.bind(
             on_press=self.load_contacts
         )
-        root.add_widget(self.contacts_button)
 
-        # =========================
-        # ACTIONS
-        # =========================
+        root.add_widget(self.contacts_button)
 
         self.whatsapp_button = Button(
             text=self.t("whatsapp"),
@@ -229,9 +212,11 @@ class MarKossApp(App):
             size_hint_y=None,
             height=dp(58)
         )
+
         self.whatsapp_button.bind(
             on_press=self.open_whatsapp
         )
+
         root.add_widget(self.whatsapp_button)
 
         self.call_button = Button(
@@ -240,9 +225,11 @@ class MarKossApp(App):
             size_hint_y=None,
             height=dp(58)
         )
+
         self.call_button.bind(
             on_press=self.call_number
         )
+
         root.add_widget(self.call_button)
 
         self.status = Label(
@@ -254,9 +241,9 @@ class MarKossApp(App):
 
         return root
 
-    # =========================
+    # =========================================================
     # LANGUAGE
-    # =========================
+    # =========================================================
 
     def t(self, key):
         return self.tr[self.language][key]
@@ -271,10 +258,8 @@ class MarKossApp(App):
 
     def update_language(self):
         self.language_button.text = self.t("language")
-
         self.title_label.text = self.t("title")
         self.subtitle_label.text = self.t("subtitle")
-
         self.voice_button.text = self.t("voice")
         self.manual_button.text = self.t("manual")
         self.name_button.text = self.t("name_search")
@@ -282,22 +267,22 @@ class MarKossApp(App):
         self.whatsapp_button.text = self.t("whatsapp")
         self.call_button.text = self.t("call")
 
-        if self.input_box.text.strip() == "":
+        if not self.input_box.text.strip():
             self.input_box.hint_text = self.t("manual_hint")
 
         self.status.text = self.t("ready")
 
-    # =========================
+    # =========================================================
     # MANUAL SEARCH
-    # =========================
+    # =========================================================
 
     def manual_search(self, instance):
         self.input_box.hint_text = self.t("manual_hint")
         self.input_box.focus = True
 
-    # =========================
+    # =========================================================
     # SEARCH BY NAME
-    # =========================
+    # =========================================================
 
     def name_search(self, instance):
         self.input_box.hint_text = self.t("name_hint")
@@ -325,9 +310,9 @@ class MarKossApp(App):
         else:
             self.status.text = self.t("not_found")
 
-    # =========================
+    # =========================================================
     # PHONE NUMBER
-    # =========================
+    # =========================================================
 
     def clean_number(self, number):
         number = str(number).strip()
@@ -370,9 +355,9 @@ class MarKossApp(App):
 
         return False
 
-    # =========================
+    # =========================================================
     # WHATSAPP
-    # =========================
+    # =========================================================
 
     def open_whatsapp(self, instance):
         value = self.input_box.text.strip()
@@ -405,7 +390,8 @@ class MarKossApp(App):
                     "android.intent.action.VIEW",
                     "-d",
                     "https://wa.me/" + number
-                ]
+                ],
+                check=False
             )
 
             self.status.text = self.t("whatsapp_open")
@@ -413,9 +399,9 @@ class MarKossApp(App):
         except Exception:
             self.status.text = self.t("whatsapp_error")
 
-    # =========================
+    # =========================================================
     # CALL
-    # =========================
+    # =========================================================
 
     def call_number(self, instance):
         value = self.input_box.text.strip()
@@ -448,7 +434,8 @@ class MarKossApp(App):
                     "android.intent.action.DIAL",
                     "-d",
                     "tel:+" + number
-                ]
+                ],
+                check=False
             )
 
             self.status.text = self.t("phone_open")
@@ -456,9 +443,9 @@ class MarKossApp(App):
         except Exception:
             self.status.text = self.t("phone_error")
 
-    # =========================
+    # =========================================================
     # VOICE SEARCH
-    # =========================
+    # =========================================================
 
     def voice_search(self, instance):
         self.status.text = self.t("speaking")
@@ -559,7 +546,7 @@ class MarKossApp(App):
             contact = self.find_contact(text)
 
             if contact:
-                self.input_box.text = contact["name"]
+                self.input_box.text = contact["number"]
 
                 self.status.text = (
                     self.t("contact_found")
@@ -573,9 +560,9 @@ class MarKossApp(App):
         except Exception:
             self.status.text = self.t("not_understood")
 
-    # =========================
+    # =========================================================
     # VOICE NUMBER EXTRACTION
-    # =========================
+    # =========================================================
 
     def extract_spoken_number(self, text):
         arabic_digits = str.maketrans(
@@ -623,7 +610,6 @@ class MarKossApp(App):
             "ثمان": "8",
             "تسعة": "9",
             "تسع": "9",
-
             "zero": "0",
             "one": "1",
             "two": "2",
@@ -647,9 +633,9 @@ class MarKossApp(App):
 
         return ""
 
-    # =========================
+    # =========================================================
     # CONTACT PERMISSION
-    # =========================
+    # =========================================================
 
     def request_contacts_permission(self):
         try:
@@ -667,9 +653,9 @@ class MarKossApp(App):
         except Exception:
             return False
 
-    # =========================
+    # =========================================================
     # LOAD CONTACTS
-    # =========================
+    # =========================================================
 
     def load_contacts(self, instance):
         self.status.text = self.t("reading_contacts")
@@ -751,9 +737,9 @@ class MarKossApp(App):
                 "contacts_error"
             )
 
-    # =========================
+    # =========================================================
     # CONTACT POPUP
-    # =========================
+    # =========================================================
 
     def show_contacts(self):
         layout = BoxLayout(
@@ -852,9 +838,9 @@ class MarKossApp(App):
 
         popup.open()
 
-    # =========================
+    # =========================================================
     # FIND CONTACT
-    # =========================
+    # =========================================================
 
     def find_contact(self, name):
         name = str(name).strip().lower()
@@ -880,3 +866,4 @@ class MarKossApp(App):
 
 if __name__ == "__main__":
     MarKossApp().run()
+

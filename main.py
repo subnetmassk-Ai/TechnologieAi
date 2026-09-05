@@ -1,4 +1,5 @@
 import re
+import subprocess
 
 from kivy.app import App
 from kivy.metrics import dp
@@ -11,7 +12,7 @@ from kivy.uix.textinput import TextInput
 
 class MarKossApp(App):
 
-    VOICE_REQUEST = 1001
+    VOICE_REQUEST = 100
 
     def build(self):
         self.title = "MarKoss"
@@ -26,8 +27,8 @@ class MarKossApp(App):
                 "voice": "🎙️ البحث الصوتي",
                 "manual": "⌨️ البحث اليدوي",
                 "name_search": "👤 البحث حسب الاسم",
-                "contacts": "👥 جهات الاتصال",
-                "whatsapp": "🟢 فتح WhatsApp",
+                "contacts": "👥 اختيار الاسم من جهات الاتصال",
+                "whatsapp": "🟢 WhatsApp",
                 "call": "📞 اتصال",
                 "manual_hint": "أدخل رقم الهاتف",
                 "name_hint": "أدخل اسم جهة الاتصال",
@@ -51,11 +52,10 @@ class MarKossApp(App):
                 "contacts_loaded": "👥 تم تحميل {count} جهة اتصال",
                 "contacts_error": "❌ تعذر قراءة جهات الاتصال",
                 "contacts_title": "جهات الاتصال",
-                "search_contact_hint": "ابحث عن اسم أو رقم...",
+                "search_contact_hint": "ابحث عن اسم...",
                 "select_contact": "اختر جهة اتصال",
                 "contact_ready": "👤 {name} جاهز",
-                "permission_error": "⚠️ يجب السماح بالوصول إلى جهات الاتصال",
-                "no_result": "❌ لم أجد رقمًا أو اسمًا",
+                "no_result": "❌ لم أجد رقم أو اسم",
             },
 
             "en": {
@@ -65,13 +65,13 @@ class MarKossApp(App):
                 "voice": "🎙️ Voice Search",
                 "manual": "⌨️ Manual Search",
                 "name_search": "👤 Search by Name",
-                "contacts": "👥 Contacts",
-                "whatsapp": "🟢 Open WhatsApp",
+                "contacts": "👥 Choose from Contacts",
+                "whatsapp": "🟢 WhatsApp",
                 "call": "📞 Call",
                 "manual_hint": "Enter phone number",
                 "name_hint": "Enter contact name",
                 "ready": "Ready 🚀",
-                "enter_number": "⚠️ Enter phone number",
+                "enter_number": "⚠️ Enter a phone number",
                 "enter_name": "⚠️ Enter contact name",
                 "not_found": "❌ Contact not found",
                 "invalid": "❌ Invalid number",
@@ -90,188 +90,178 @@ class MarKossApp(App):
                 "contacts_loaded": "👥 Loaded {count} contacts",
                 "contacts_error": "❌ Could not read contacts",
                 "contacts_title": "Contacts",
-                "search_contact_hint": "Search name or number...",
+                "search_contact_hint": "Search name...",
                 "select_contact": "Choose a contact",
                 "contact_ready": "👤 {name} ready",
-                "permission_error": "⚠️ Contacts permission is required",
                 "no_result": "❌ No number or name found",
-            },
+            }
         }
 
-        self.root = BoxLayout(
+        root = BoxLayout(
             orientation="vertical",
             padding=[dp(20), dp(10), dp(20), dp(20)],
-            spacing=dp(10),
+            spacing=dp(10)
         )
 
-        # Language
+        # =========================
+        # LANGUAGE - TOP RIGHT
+        # =========================
+
         language_bar = BoxLayout(
             orientation="horizontal",
             size_hint_y=None,
-            height=dp(45),
+            height=dp(45)
         )
 
-        language_bar.add_widget(Label(text=""))
+        language_bar.add_widget(
+            Label(text="")
+        )
 
         self.language_button = Button(
             text=self.t("language"),
             size_hint_x=None,
             width=dp(130),
-            font_size="16sp",
+            font_size="16sp"
         )
 
         self.language_button.bind(
             on_press=self.toggle_language
         )
 
-        language_bar.add_widget(self.language_button)
-        self.root.add_widget(language_bar)
+        language_bar.add_widget(
+            self.language_button
+        )
 
-        # Title
+        root.add_widget(language_bar)
+
+        # =========================
+        # TITLE
+        # =========================
+
         self.title_label = Label(
             text=self.t("title"),
             font_size="32sp",
             bold=True,
             size_hint_y=None,
-            height=dp(55),
+            height=dp(55)
         )
 
-        self.root.add_widget(self.title_label)
+        root.add_widget(self.title_label)
 
         self.subtitle_label = Label(
             text=self.t("subtitle"),
             font_size="18sp",
             size_hint_y=None,
-            height=dp(35),
+            height=dp(35)
         )
 
-        self.root.add_widget(self.subtitle_label)
+        root.add_widget(self.subtitle_label)
 
-        # Input
+        # =========================
+        # INPUT
+        # =========================
+
         self.input_box = TextInput(
             hint_text=self.t("manual_hint"),
             multiline=False,
             font_size="19sp",
             size_hint_y=None,
-            height=dp(55),
+            height=dp(55)
         )
 
-        self.root.add_widget(self.input_box)
+        root.add_widget(self.input_box)
 
-        # Voice
+        # =========================
+        # SEARCH OPTIONS
+        # =========================
+
         self.voice_button = Button(
             text=self.t("voice"),
             font_size="19sp",
             size_hint_y=None,
-            height=dp(55),
+            height=dp(55)
         )
-
         self.voice_button.bind(
             on_press=self.voice_search
         )
+        root.add_widget(self.voice_button)
 
-        self.root.add_widget(self.voice_button)
-
-        # Manual
         self.manual_button = Button(
             text=self.t("manual"),
             font_size="19sp",
             size_hint_y=None,
-            height=dp(55),
+            height=dp(55)
         )
-
         self.manual_button.bind(
             on_press=self.manual_search
         )
+        root.add_widget(self.manual_button)
 
-        self.root.add_widget(self.manual_button)
-
-        # Name
         self.name_button = Button(
             text=self.t("name_search"),
             font_size="19sp",
             size_hint_y=None,
-            height=dp(55),
+            height=dp(55)
         )
-
         self.name_button.bind(
             on_press=self.name_search
         )
+        root.add_widget(self.name_button)
 
-        self.root.add_widget(self.name_button)
-
-        # Contacts
         self.contacts_button = Button(
             text=self.t("contacts"),
             font_size="19sp",
             size_hint_y=None,
-            height=dp(55),
+            height=dp(55)
         )
-
         self.contacts_button.bind(
             on_press=self.load_contacts
         )
+        root.add_widget(self.contacts_button)
 
-        self.root.add_widget(self.contacts_button)
+        # =========================
+        # ACTIONS
+        # =========================
 
-        # WhatsApp
         self.whatsapp_button = Button(
             text=self.t("whatsapp"),
             font_size="20sp",
             size_hint_y=None,
-            height=dp(58),
+            height=dp(58)
         )
-
         self.whatsapp_button.bind(
             on_press=self.open_whatsapp
         )
+        root.add_widget(self.whatsapp_button)
 
-        self.root.add_widget(self.whatsapp_button)
-
-        # Call
         self.call_button = Button(
             text=self.t("call"),
             font_size="20sp",
             size_hint_y=None,
-            height=dp(58),
+            height=dp(58)
         )
-
         self.call_button.bind(
             on_press=self.call_number
         )
+        root.add_widget(self.call_button)
 
-        self.root.add_widget(self.call_button)
-
-        # Status
         self.status = Label(
             text=self.t("ready"),
-            font_size="16sp",
+            font_size="16sp"
         )
 
-        self.root.add_widget(self.status)
+        root.add_widget(self.status)
 
-        # Android activity callback
-        try:
-            from android import activity
+        return root
 
-            activity.bind(
-                on_activity_result=self.on_activity_result
-            )
-
-        except Exception:
-            pass
-
-        return self.root
-
-    # =========================================================
-    # TRANSLATION
-    # =========================================================
+    # =========================
+    # LANGUAGE
+    # =========================
 
     def t(self, key):
         return self.tr[self.language][key]
 
     def toggle_language(self, instance):
-
         if self.language == "ar":
             self.language = "en"
         else:
@@ -280,10 +270,11 @@ class MarKossApp(App):
         self.update_language()
 
     def update_language(self):
-
         self.language_button.text = self.t("language")
+
         self.title_label.text = self.t("title")
         self.subtitle_label.text = self.t("subtitle")
+
         self.voice_button.text = self.t("voice")
         self.manual_button.text = self.t("manual")
         self.name_button.text = self.t("name_search")
@@ -291,25 +282,24 @@ class MarKossApp(App):
         self.whatsapp_button.text = self.t("whatsapp")
         self.call_button.text = self.t("call")
 
-        if not self.input_box.text.strip():
+        if self.input_box.text.strip() == "":
             self.input_box.hint_text = self.t("manual_hint")
-            self.status.text = self.t("ready")
 
-    # =========================================================
-    # MANUAL
-    # =========================================================
+        self.status.text = self.t("ready")
+
+    # =========================
+    # MANUAL SEARCH
+    # =========================
 
     def manual_search(self, instance):
-
         self.input_box.hint_text = self.t("manual_hint")
         self.input_box.focus = True
 
-    # =========================================================
-    # SEARCH NAME
-    # =========================================================
+    # =========================
+    # SEARCH BY NAME
+    # =========================
 
     def name_search(self, instance):
-
         self.input_box.hint_text = self.t("name_hint")
 
         name = self.input_box.text.strip()
@@ -326,27 +316,20 @@ class MarKossApp(App):
         contact = self.find_contact(name)
 
         if contact:
-
             self.input_box.text = contact["number"]
 
             self.status.text = (
                 self.t("contact_found")
                 + contact["name"]
             )
-
         else:
-
             self.status.text = self.t("not_found")
 
-    # =========================================================
-    # NUMBER CLEANING
-    # =========================================================
+    # =========================
+    # PHONE NUMBER
+    # =========================
 
     def clean_number(self, number):
-
-        if number is None:
-            return ""
-
         number = str(number).strip()
 
         arabic_digits = str.maketrans(
@@ -354,13 +337,7 @@ class MarKossApp(App):
             "0123456789"
         )
 
-        persian_digits = str.maketrans(
-            "۰۱۲۳۴۵۶۷۸۹",
-            "0123456789"
-        )
-
         number = number.translate(arabic_digits)
-        number = number.translate(persian_digits)
 
         number = re.sub(
             r"[^0-9]",
@@ -368,35 +345,24 @@ class MarKossApp(App):
             number
         )
 
-        # 00961xxxxxxxx
         if number.startswith("00961"):
             number = number[2:]
 
-        # +961xxxxxxxx
-        if number.startswith("961"):
-            return number
-
-        # Lebanese local number
         if number.startswith("0"):
             number = number[1:]
 
-        # Lebanese 8 digit number
-        if len(number) == 8:
+        if len(number) == 8 and number[0] in "3789":
             number = "961" + number
 
         return number
 
     def valid_number(self, number):
-
         number = self.clean_number(number)
 
         if not number:
             return False
 
-        if (
-            len(number) == 11
-            and number.startswith("961")
-        ):
+        if len(number) == 11 and number.startswith("961"):
             return True
 
         if 8 <= len(number) <= 15:
@@ -404,19 +370,100 @@ class MarKossApp(App):
 
         return False
 
-    # =========================================================
-    # ANDROID INTENT
-    # =========================================================
+    # =========================
+    # WHATSAPP
+    # =========================
 
-    def start_android_intent(
-        self,
-        action,
-        uri,
-        package_name=None
-    ):
+    def open_whatsapp(self, instance):
+        value = self.input_box.text.strip()
+
+        if not value:
+            self.status.text = self.t("enter_number")
+            return
+
+        if not re.search(r"\d", value):
+            number = self.find_contact_number(value)
+
+            if not number:
+                self.status.text = self.t("not_found")
+                return
+        else:
+            number = value
+
+        number = self.clean_number(number)
+
+        if not self.valid_number(number):
+            self.status.text = self.t("invalid")
+            return
 
         try:
+            subprocess.run(
+                [
+                    "am",
+                    "start",
+                    "-a",
+                    "android.intent.action.VIEW",
+                    "-d",
+                    "https://wa.me/" + number
+                ]
+            )
 
+            self.status.text = self.t("whatsapp_open")
+
+        except Exception:
+            self.status.text = self.t("whatsapp_error")
+
+    # =========================
+    # CALL
+    # =========================
+
+    def call_number(self, instance):
+        value = self.input_box.text.strip()
+
+        if not value:
+            self.status.text = self.t("enter_number")
+            return
+
+        if not re.search(r"\d", value):
+            number = self.find_contact_number(value)
+
+            if not number:
+                self.status.text = self.t("not_found")
+                return
+        else:
+            number = value
+
+        number = self.clean_number(number)
+
+        if not self.valid_number(number):
+            self.status.text = self.t("invalid")
+            return
+
+        try:
+            subprocess.run(
+                [
+                    "am",
+                    "start",
+                    "-a",
+                    "android.intent.action.DIAL",
+                    "-d",
+                    "tel:+" + number
+                ]
+            )
+
+            self.status.text = self.t("phone_open")
+
+        except Exception:
+            self.status.text = self.t("phone_error")
+
+    # =========================
+    # VOICE SEARCH
+    # =========================
+
+    def voice_search(self, instance):
+        self.status.text = self.t("speaking")
+
+        try:
             from jnius import autoclass
 
             PythonActivity = autoclass(
@@ -427,67 +474,409 @@ class MarKossApp(App):
                 "android.content.Intent"
             )
 
-            Uri = autoclass(
-                "android.net.Uri"
+            RecognizerIntent = autoclass(
+                "android.speech.RecognizerIntent"
             )
-
-            activity = PythonActivity.mActivity
 
             intent = Intent(
-                action,
-                Uri.parse(uri)
+                RecognizerIntent.ACTION_RECOGNIZE_SPEECH
             )
 
-            if package_name:
-                intent.setPackage(package_name)
+            intent.putExtra(
+                RecognizerIntent.EXTRA_LANGUAGE_MODEL,
+                RecognizerIntent.LANGUAGE_MODEL_FREE_FORM
+            )
 
-            activity.startActivity(intent)
+            if self.language == "ar":
+                intent.putExtra(
+                    RecognizerIntent.EXTRA_LANGUAGE,
+                    "ar-LB"
+                )
+            else:
+                intent.putExtra(
+                    RecognizerIntent.EXTRA_LANGUAGE,
+                    "en-US"
+                )
+
+            intent.putExtra(
+                RecognizerIntent.EXTRA_PROMPT,
+                self.t("speaking")
+            )
+
+            PythonActivity.mActivity.startActivityForResult(
+                intent,
+                self.VOICE_REQUEST
+            )
+
+        except Exception:
+            self.status.text = self.t("voice_error")
+
+    def on_activity_result(
+        self,
+        request_code,
+        result_code,
+        intent
+    ):
+        if request_code != self.VOICE_REQUEST:
+            return
+
+        try:
+            from jnius import autoclass
+
+            Activity = autoclass(
+                "android.app.Activity"
+            )
+
+            if result_code != Activity.RESULT_OK:
+                self.status.text = self.t("no_voice")
+                return
+
+            results = intent.getStringArrayListExtra(
+                "android.speech.extra.RESULTS"
+            )
+
+            if not results:
+                self.status.text = self.t("not_understood")
+                return
+
+            text = str(results.get(0))
+
+            self.status.text = (
+                self.t("heard") + text
+            )
+
+            number = self.extract_spoken_number(text)
+
+            if number:
+                self.input_box.text = number
+
+                self.status.text = (
+                    self.t("number_found") + number
+                )
+
+                return
+
+            contact = self.find_contact(text)
+
+            if contact:
+                self.input_box.text = contact["name"]
+
+                self.status.text = (
+                    self.t("contact_found")
+                    + contact["name"]
+                )
+
+                return
+
+            self.status.text = self.t("no_result")
+
+        except Exception:
+            self.status.text = self.t("not_understood")
+
+    # =========================
+    # VOICE NUMBER EXTRACTION
+    # =========================
+
+    def extract_spoken_number(self, text):
+        arabic_digits = str.maketrans(
+            "٠١٢٣٤٥٦٧٨٩",
+            "0123456789"
+        )
+
+        text = text.translate(arabic_digits)
+
+        digits = re.findall(
+            r"\d+",
+            text
+        )
+
+        if digits:
+            number = "".join(digits)
+
+            if len(number) >= 8:
+                return self.clean_number(number)
+
+        words = (
+            text.lower()
+            .replace("-", " ")
+            .split()
+        )
+
+        numbers = {
+            "صفر": "0",
+            "واحد": "1",
+            "اثنين": "2",
+            "اثنان": "2",
+            "ثلاثة": "3",
+            "ثلاث": "3",
+            "أربعة": "4",
+            "اربعة": "4",
+            "أربع": "4",
+            "خمسة": "5",
+            "خمس": "5",
+            "ستة": "6",
+            "ست": "6",
+            "سبعة": "7",
+            "سبع": "7",
+            "ثمانية": "8",
+            "تمانية": "8",
+            "ثمان": "8",
+            "تسعة": "9",
+            "تسع": "9",
+
+            "zero": "0",
+            "one": "1",
+            "two": "2",
+            "three": "3",
+            "four": "4",
+            "five": "5",
+            "six": "6",
+            "seven": "7",
+            "eight": "8",
+            "nine": "9"
+        }
+
+        result = ""
+
+        for word in words:
+            if word in numbers:
+                result += numbers[word]
+
+        if len(result) >= 8:
+            return self.clean_number(result)
+
+        return ""
+
+    # =========================
+    # CONTACT PERMISSION
+    # =========================
+
+    def request_contacts_permission(self):
+        try:
+            from android.permissions import request_permissions
+            from android.permissions import Permission
+
+            request_permissions(
+                [
+                    Permission.READ_CONTACTS
+                ]
+            )
 
             return True
 
-        except Exception as e:
-
-            print(
-                "Android Intent error:",
-                e
-            )
-
+        except Exception:
             return False
 
-    # =========================================================
-    # WHATSAPP
-    # =========================================================
+    # =========================
+    # LOAD CONTACTS
+    # =========================
 
-    def open_whatsapp(self, instance):
+    def load_contacts(self, instance):
+        self.status.text = self.t("reading_contacts")
 
-        value = self.input_box.text.strip()
+        try:
+            self.request_contacts_permission()
 
-        if not value:
+            from jnius import autoclass
 
-            self.status.text = self.t("enter_number")
-            return
+            PythonActivity = autoclass(
+                "org.kivy.android.PythonActivity"
+            )
 
-        # If user typed a name
-        if not re.search(r"\d", value):
+            ContentResolver = (
+                PythonActivity
+                .mActivity
+                .getContentResolver()
+            )
 
-            if not self.contacts:
-                self.status.text = self.t("not_found")
-                return
+            ContactsContract = autoclass(
+                "android.provider.ContactsContract"
+            )
 
-            number = self.find_contact_number(value)
+            Phone = (
+                ContactsContract
+                .CommonDataKinds
+                .Phone
+            )
 
-            if not number:
+            cursor = ContentResolver.query(
+                Phone.CONTENT_URI,
+                None,
+                None,
+                None,
+                Phone.DISPLAY_NAME + " ASC"
+            )
 
-                self.status.text = self.t("not_found")
-                return
+            contacts = []
 
-        else:
+            if cursor:
+                name_index = cursor.getColumnIndex(
+                    Phone.DISPLAY_NAME
+                )
 
-            number = value
+                number_index = cursor.getColumnIndex(
+                    Phone.NUMBER
+                )
 
-        number = self.clean_number(number)
+                while cursor.moveToNext():
+                    name = cursor.getString(
+                        name_index
+                    )
 
-        if not self.valid_number(number):
+                    number = cursor.getString(
+                        number_index
+                    )
 
-            self.status.text = self.t("invalid")
-           
+                    contacts.append(
+                        {
+                            "name": str(name),
+                            "number": str(number)
+                        }
+                    )
+
+                cursor.close()
+
+            self.contacts = contacts
+
+            self.status.text = self.t(
+                "contacts_loaded"
+            ).format(
+                count=len(self.contacts)
+            )
+
+            self.show_contacts()
+
+        except Exception:
+            self.status.text = self.t(
+                "contacts_error"
+            )
+
+    # =========================
+    # CONTACT POPUP
+    # =========================
+
+    def show_contacts(self):
+        layout = BoxLayout(
+            orientation="vertical",
+            padding=dp(10),
+            spacing=dp(5)
+        )
+
+        search_box = TextInput(
+            hint_text=self.t(
+                "search_contact_hint"
+            ),
+            multiline=False,
+            size_hint_y=None,
+            height=dp(50)
+        )
+
+        layout.add_widget(search_box)
+
+        result_label = Label(
+            text=self.t("select_contact"),
+            size_hint_y=None,
+            height=dp(40)
+        )
+
+        layout.add_widget(result_label)
+
+        buttons = BoxLayout(
+            orientation="vertical",
+            spacing=dp(5)
+        )
+
+        layout.add_widget(buttons)
+
+        popup = Popup(
+            title=self.t("contacts_title"),
+            content=layout,
+            size_hint=(0.9, 0.85)
+        )
+
+        def refresh(*args):
+            buttons.clear_widgets()
+
+            query = search_box.text.strip().lower()
+
+            shown = 0
+
+            for contact in self.contacts:
+
+                if (
+                    query
+                    and query not in contact["name"].lower()
+                ):
+                    continue
+
+                button = Button(
+                    text=(
+                        contact["name"]
+                        + "\n"
+                        + contact["number"]
+                    ),
+                    size_hint_y=None,
+                    height=dp(60)
+                )
+
+                def select_contact(
+                    instance,
+                    c=contact
+                ):
+                    self.input_box.text = c["number"]
+
+                    self.status.text = self.t(
+                        "contact_ready"
+                    ).format(
+                        name=c["name"]
+                    )
+
+                    popup.dismiss()
+
+                button.bind(
+                    on_press=select_contact
+                )
+
+                buttons.add_widget(button)
+
+                shown += 1
+
+                if shown >= 30:
+                    break
+
+        search_box.bind(
+            text=refresh
+        )
+
+        refresh()
+
+        popup.open()
+
+    # =========================
+    # FIND CONTACT
+    # =========================
+
+    def find_contact(self, name):
+        name = str(name).strip().lower()
+
+        for contact in self.contacts:
+            if name == contact["name"].lower():
+                return contact
+
+        for contact in self.contacts:
+            if name in contact["name"].lower():
+                return contact
+
+        return None
+
+    def find_contact_number(self, name):
+        contact = self.find_contact(name)
+
+        if contact:
+            return contact["number"]
+
+        return None
+
+
+if __name__ == "__main__":
+    MarKossApp().run()
